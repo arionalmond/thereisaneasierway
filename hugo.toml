@@ -1,5 +1,4 @@
-# Replace with your custom domain once DNS is set up, e.g. "https://yourdomain.com/"
-baseURL = "https://example.com/"
+baseURL = "https://thereisaneasierway.com/"
 languageCode = "en-us"
 title = "Your Name"
 theme = "chalk"
