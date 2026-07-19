@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deploying this website · Ari Almond</title>
+<meta name="description" content="Notes on wiring up GitHub Actions, GitHub Pages, and Cloudflare DNS to get this site live at thereisaneasierway.com.">
+<meta name="color-scheme" content="light dark">
+
+<meta property="og:title" content="Deploying this website">
+<meta property="og:site_name" content="Ari Almond">
+<meta property="og:type" content="article">
+<meta property="og:url" content="http://localhost:1313/posts/deploying-this-website/">
+<meta property="og:description" content="Notes on wiring up GitHub Actions, GitHub Pages, and Cloudflare DNS to get this site live at thereisaneasierway.com.">
+
+
+<link rel="stylesheet" href="/css/main.min.2a810f2efa17eedb67264b5e3a1c66c668c5a4d76b9cd9df310c8b3b69a09a65.css" integrity="sha256-KoEPLvoX7ttnJkteOhxmxmjFpNdrnNnfMQyLO2mgmmU=">
+
+
+<script defer src="/js/theme.min.55e97ab06b49a741c048cd778d0c12af4163e967a74496cff09485b893883d26.js" integrity="sha256-Vel6sGtJp0HASM13jQwSr0Fj6WenRJbP8JSFuJOIPSY="></script>
+
+</head>
+<body>
+  <script>
+    
+    (function () {
+      var stored = localStorage.getItem("theme");
+      var theme = stored || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <header class="site-header">
+  <a class="site-name" href="/">Ari Almond</a>
+  <nav class="site-nav" aria-label="Main">
+    
+    
+      <a href="/posts/" aria-current="page">Posts</a>
+    
+      <a href="/projects/">Projects</a>
+    
+      <a href="/teaching/">Teaching</a>
+    
+      <a href="/about/">About</a>
+    
+    <button id="theme-toggle" type="button" aria-label="Toggle color theme" title="Toggle color theme">◐</button>
+  </nav>
+</header>
+
+  <main>
+    
+  <article>
+    <header class="article-header">
+      <h1>Deploying this website</h1>
+      
+        <p class="article-meta">
+          <time datetime="2026-07-19">July 19, 2026</time>
+           · meta
+        </p>
+      
+    </header>
+    <p>This site is a static <a href="https://gohugo.io">Hugo</a> build with a custom theme, and getting it live came down to three pieces: a build pipeline, a host, and a domain.</p>
+<h2 id="the-build-pipeline">The build pipeline</h2>
+<p>Rather than build locally and push the output, I added a GitHub Actions workflow (<code>.github/workflows/hugo.yaml</code>) that builds the site with Hugo on every push to <code>main</code> and deploys it to GitHub Pages. The Hugo version in the workflow is pinned to match what&rsquo;s installed locally, so <code>hugo server -D</code> and CI never drift apart.</p>
+<h2 id="picking-a-domain">Picking a domain</h2>
+<p>I first set this up as a subdomain — <code>blog.thereisaneasierway.com</code> — using a single <code>CNAME</code> DNS record pointing at <code>&lt;username&gt;.github.io</code>. That&rsquo;s the simpler setup for a subdomain: one record, no ambiguity.</p>
+<p>But for a one-site personal domain, a subdomain adds a layer of indirection without much benefit, so I switched to serving the site directly from the apex domain, <code>thereisaneasierway.com</code>. That meant swapping the <code>CNAME</code> DNS record for four <code>A</code> records pointing at GitHub Pages&rsquo; IPs, and updating <code>baseURL</code> in <code>hugo.toml</code> and the <code>static/CNAME</code> file (which Hugo copies into the build output so GitHub Pages picks up the custom domain automatically) to match.</p>
+<h2 id="dns-on-cloudflare">DNS on Cloudflare</h2>
+<p>DNS is managed through Cloudflare, which has a couple of gotchas with GitHub Pages:</p>
+<ul>
+<li><strong>Proxy status matters.</strong> Cloudflare&rsquo;s orange-cloud proxy sits in front of your DNS and can interfere with GitHub&rsquo;s domain verification and its automatic HTTPS certificate issuance. Keeping the records &ldquo;DNS only&rdquo; (grey cloud) sidesteps that entirely — and for a simple blog, the proxy isn&rsquo;t buying much anyway.</li>
+<li><strong>Domain verification.</strong> Before GitHub accepted the custom domain, it asked for a verification <code>TXT</code> record to prove ownership of <code>thereisaneasierway.com</code>. That went in alongside the <code>A</code> records, also DNS-only.</li>
+</ul>
+<p>Once DNS propagated and GitHub verified the domain, I flipped on <strong>Enforce HTTPS</strong> in the repo&rsquo;s Pages settings, and the site was live.</p>
+<p>If you&rsquo;re setting up something similar, the two things worth getting right up front are pinning your Hugo version between local and CI, and leaving DNS records unproxied until the certificate is issued.</p>
+
+  </article>
+
+  </main>
+  <footer class="site-footer">
+  <p>© 2026 Ari Almond · <a href="/index.xml">RSS</a></p>
+</footer>
+
+</body>
+</html>

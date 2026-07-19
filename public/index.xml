@@ -1,18 +1,25 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 	<channel>
-		<title>Home on Your Name</title>
+		<title>Home on Ari Almond</title>
 		<link>http://localhost:1313/</link>
-		<description>Recent content in Home on Your Name</description>
+		<description>Recent content in Home on Ari Almond</description>
 		<generator>Hugo</generator>
 		<language>en-us</language>
 		
 		
 		
 		
-			<lastBuildDate>Sun, 19 Jul 2026 09:00:00 -0400</lastBuildDate>
+			<lastBuildDate>Sun, 19 Jul 2026 15:30:02 -0400</lastBuildDate>
 		
 			<atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+			<item>
+				<title>Deploying this website</title>
+				<link>http://localhost:1313/posts/deploying-this-website/</link>
+				<pubDate>Sun, 19 Jul 2026 15:30:02 -0400</pubDate>
+				<guid>http://localhost:1313/posts/deploying-this-website/</guid>
+				<description>&lt;p&gt;This site is a static &lt;a href=&#34;https://gohugo.io&#34;&gt;Hugo&lt;/a&gt; build with a custom theme, and getting it live came down to three pieces: a build pipeline, a host, and a domain.&lt;/p&gt;&#xA;&lt;h2 id=&#34;the-build-pipeline&#34;&gt;The build pipeline&lt;/h2&gt;&#xA;&lt;p&gt;Rather than build locally and push the output, I added a GitHub Actions workflow (&lt;code&gt;.github/workflows/hugo.yaml&lt;/code&gt;) that builds the site with Hugo on every push to &lt;code&gt;main&lt;/code&gt; and deploys it to GitHub Pages. The Hugo version in the workflow is pinned to match what&amp;rsquo;s installed locally, so &lt;code&gt;hugo server -D&lt;/code&gt; and CI never drift apart.&lt;/p&gt;</description>
+			</item>
 			<item>
 				<title>Hello, world</title>
 				<link>http://localhost:1313/posts/hello-world/</link>
