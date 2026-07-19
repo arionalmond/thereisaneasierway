@@ -6,6 +6,6 @@ A few paragraphs about who you are, what you care about, and what you're working
 
 ## Contact
 
-- Email: you@yourdomain.com
-- GitHub: [@yourhandle](https://github.com/yourhandle)
-- LinkedIn: [Your Name](https://linkedin.com/in/yourhandle)
+- Email: almondcoding@gmail.com
+- GitHub: [@arionalmond](https://github.com/arionalmond)
+- LinkedIn: [Ari Almond](https://linkedin.com/in/arionalmond)

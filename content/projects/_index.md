@@ -2,4 +2,4 @@
 title = 'Projects'
 +++
 
-Software and business projects, past and present.
+(UNDER CONSTRUCTION) Software and business projects, past and present.

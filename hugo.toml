@@ -1,6 +1,6 @@
 baseURL = "https://thereisaneasierway.com/"
 locale = "en-us"
-title = "Your Name"
+title = "Ari Almond"
 theme = "chalk"
 
 # Clean URLs like /posts/my-idea/
@@ -10,7 +10,7 @@ theme = "chalk"
 [params]
   description = "Ideas, business pursuits, software projects, and teaching."
   # Shown in the footer
-  author = "Your Name"
+  author = "Ari Almond"
 
 [menus]
   [[menus.main]]
