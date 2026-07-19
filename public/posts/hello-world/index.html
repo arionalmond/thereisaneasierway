@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hello, world · Your Name</title>
+<meta name="description" content="Why this site exists and what to expect here.">
+<meta name="color-scheme" content="light dark">
+
+<meta property="og:title" content="Hello, world">
+<meta property="og:site_name" content="Your Name">
+<meta property="og:type" content="article">
+<meta property="og:url" content="http://localhost:1313/posts/hello-world/">
+<meta property="og:description" content="Why this site exists and what to expect here.">
+
+
+<link rel="stylesheet" href="/css/main.min.2a810f2efa17eedb67264b5e3a1c66c668c5a4d76b9cd9df310c8b3b69a09a65.css" integrity="sha256-KoEPLvoX7ttnJkteOhxmxmjFpNdrnNnfMQyLO2mgmmU=">
+
+
+<script defer src="/js/theme.min.55e97ab06b49a741c048cd778d0c12af4163e967a74496cff09485b893883d26.js" integrity="sha256-Vel6sGtJp0HASM13jQwSr0Fj6WenRJbP8JSFuJOIPSY="></script>
+
+</head>
+<body>
+  <script>
+    
+    (function () {
+      var stored = localStorage.getItem("theme");
+      var theme = stored || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <header class="site-header">
+  <a class="site-name" href="/">Your Name</a>
+  <nav class="site-nav" aria-label="Main">
+    
+    
+      <a href="/posts/" aria-current="page">Posts</a>
+    
+      <a href="/projects/">Projects</a>
+    
+      <a href="/teaching/">Teaching</a>
+    
+      <a href="/about/">About</a>
+    
+    <button id="theme-toggle" type="button" aria-label="Toggle color theme" title="Toggle color theme">◐</button>
+  </nav>
+</header>
+
+  <main>
+    
+  <article>
+    <header class="article-header">
+      <h1>Hello, world</h1>
+      
+        <p class="article-meta">
+          <time datetime="2026-07-19">July 19, 2026</time>
+           · meta
+        </p>
+      
+    </header>
+    <p>This is the first post. Replace it with your own words — a good opener is <em>why</em> you&rsquo;re writing in public and what a reader should expect.</p>
+<p>A few things this theme handles out of the box:</p>
+<ul>
+<li><strong>Prose</strong> set in a readable serif at a comfortable measure.</li>
+<li><code>Inline code</code> and fenced code blocks with syntax highlighting:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">teach</span><span class="p">(</span><span class="n">idea</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">explain</span><span class="p">(</span><span class="n">idea</span><span class="p">,</span> <span class="n">twice</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span></code></pre></div><blockquote>
+<p>Blockquotes for the things other people said better.</p>
+</blockquote>
+<p>That&rsquo;s it. Write more posts with <code>hugo new content posts/my-next-idea.md</code>.</p>
+
+  </article>
+
+  </main>
+  <footer class="site-footer">
+  <p>© 2026 Your Name · <a href="/index.xml">RSS</a></p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	<channel>
+		<title>Posts on Your Name</title>
+		<link>http://localhost:1313/posts/</link>
+		<description>Recent content in Posts on Your Name</description>
+		<generator>Hugo</generator>
+		<language>en-us</language>
+		
+		
+		
+		
+			<lastBuildDate>Sun, 19 Jul 2026 09:00:00 -0400</lastBuildDate>
+		
+			<atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+			<item>
+				<title>Hello, world</title>
+				<link>http://localhost:1313/posts/hello-world/</link>
+				<pubDate>Sun, 19 Jul 2026 09:00:00 -0400</pubDate>
+				<guid>http://localhost:1313/posts/hello-world/</guid>
+				<description>&lt;p&gt;This is the first post. Replace it with your own words — a good opener is &lt;em&gt;why&lt;/em&gt; you&amp;rsquo;re writing in public and what a reader should expect.&lt;/p&gt;&#xA;&lt;p&gt;A few things this theme handles out of the box:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Prose&lt;/strong&gt; set in a readable serif at a comfortable measure.&lt;/li&gt;&#xA;&lt;li&gt;&lt;code&gt;Inline code&lt;/code&gt; and fenced code blocks with syntax highlighting:&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;teach&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;idea&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;explain&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;idea&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;twice&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;True&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;&#xA;&lt;p&gt;Blockquotes for the things other people said better.&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;p&gt;That&amp;rsquo;s it. Write more posts with &lt;code&gt;hugo new content posts/my-next-idea.md&lt;/code&gt;.&lt;/p&gt;</description>
+			</item>
+	</channel>
+</rss>

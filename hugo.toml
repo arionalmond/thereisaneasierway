@@ -1,0 +1,42 @@
+# Replace with your custom domain once DNS is set up, e.g. "https://yourdomain.com/"
+baseURL = "https://example.com/"
+languageCode = "en-us"
+title = "Your Name"
+theme = "chalk"
+
+# Clean URLs like /posts/my-idea/
+[permalinks]
+  posts = "/posts/:slug/"
+
+[params]
+  description = "Ideas, business pursuits, software projects, and teaching."
+  # Shown in the footer
+  author = "Your Name"
+
+[menus]
+  [[menus.main]]
+    name = "Posts"
+    pageRef = "/posts"
+    weight = 10
+  [[menus.main]]
+    name = "Projects"
+    pageRef = "/projects"
+    weight = 20
+  [[menus.main]]
+    name = "Teaching"
+    pageRef = "/teaching"
+    weight = 30
+  [[menus.main]]
+    name = "About"
+    pageRef = "/about"
+    weight = 40
+
+[markup]
+  [markup.highlight]
+    noClasses = false  # use CSS classes so code blocks follow light/dark mode
+  [markup.goldmark.renderer]
+    unsafe = true      # allow raw HTML in Markdown when needed
+
+[outputs]
+  home = ["html", "rss"]
+  section = ["html", "rss"]

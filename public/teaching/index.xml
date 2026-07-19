@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	<channel>
+		<title>Teaching on Your Name</title>
+		<link>http://localhost:1313/teaching/</link>
+		<description>Recent content in Teaching on Your Name</description>
+		<generator>Hugo</generator>
+		<language>en-us</language>
+		
+		
+		
+		
+			<lastBuildDate>Mon, 01 Jun 2026 09:00:00 -0400</lastBuildDate>
+		
+			<atom:link href="http://localhost:1313/teaching/index.xml" rel="self" type="application/rss+xml" />
+			<item>
+				<title>Example Course</title>
+				<link>http://localhost:1313/teaching/example-course/</link>
+				<pubDate>Mon, 01 Jun 2026 09:00:00 -0400</pubDate>
+				<guid>http://localhost:1313/teaching/example-course/</guid>
+				<description>&lt;p&gt;Syllabus overview, links to slides or notes, and anything students or curious readers should know.&lt;/p&gt;</description>
+			</item>
+	</channel>
+</rss>

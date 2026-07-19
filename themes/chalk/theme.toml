@@ -1,0 +1,4 @@
+name = "Chalk"
+license = "MIT"
+description = "A minimal, text-first Hugo theme. Light mode is paper; dark mode is chalkboard."
+min_version = "0.128.0"
