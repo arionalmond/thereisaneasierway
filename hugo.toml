@@ -1,5 +1,5 @@
 baseURL = "https://thereisaneasierway.com/"
-languageCode = "en-us"
+locale = "en-us"
 title = "Your Name"
 theme = "chalk"
 
