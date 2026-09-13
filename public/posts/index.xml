@@ -10,9 +10,16 @@
 		
 		
 		
-			<lastBuildDate>Sun, 19 Jul 2026 15:30:02 -0400</lastBuildDate>
+			<lastBuildDate>Sun, 13 Sep 2026 16:25:19 -0400</lastBuildDate>
 		
 			<atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+			<item>
+				<title>Client Side Dynamic Site on Github Pages</title>
+				<link>http://localhost:1313/posts/client-side-dynamic-site-on-github-pages/</link>
+				<pubDate>Sun, 13 Sep 2026 16:25:19 -0400</pubDate>
+				<guid>http://localhost:1313/posts/client-side-dynamic-site-on-github-pages/</guid>
+				<description>&lt;p&gt;GitHub Pages can host client-side dynamic applications (such as Single Page Applications built with React, Vue, or Angular) because it serves static files (HTML, CSS, JavaScript) that execute in the user&amp;rsquo;s browser.&lt;/p&gt;&#xA;&lt;p&gt;However, it cannot host server-side rendered (SSR) applications or run backend code like PHP or Node.js directly.&lt;/p&gt;&#xA;&lt;h2 id=&#34;routing-challenges-and-solutions&#34;&gt;Routing Challenges and Solutions&lt;/h2&gt;&#xA;&lt;h3 id=&#34;the-404-issue&#34;&gt;The 404 Issue&lt;/h3&gt;&#xA;&lt;p&gt;GitHub Pages does not support server-side routing (HTML5 pushState); refreshing a non-root route (e.g., /about) returns a 404 error because the server lacks a &amp;ldquo;front controller.&amp;rdquo;&lt;/p&gt;</description>
+			</item>
 			<item>
 				<title>Deploying this website</title>
 				<link>http://localhost:1313/posts/deploying-this-website/</link>
