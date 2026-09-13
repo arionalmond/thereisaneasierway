@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 	<channel>
-		<title>Teaching on Ari Almond</title>
+		<title>Teaching on There Is An Easier Way</title>
 		<link>http://localhost:1313/teaching/</link>
-		<description>Recent content in Teaching on Ari Almond</description>
+		<description>Recent content in Teaching on There Is An Easier Way</description>
 		<generator>Hugo</generator>
 		<language>en-us</language>
 		
@@ -14,11 +14,11 @@
 		
 			<atom:link href="http://localhost:1313/teaching/index.xml" rel="self" type="application/rss+xml" />
 			<item>
-				<title>Example Course</title>
-				<link>http://localhost:1313/teaching/example-course/</link>
+				<title>code.org: Computer Science Principles</title>
+				<link>http://localhost:1313/teaching/csp/</link>
 				<pubDate>Mon, 01 Jun 2026 09:00:00 -0400</pubDate>
-				<guid>http://localhost:1313/teaching/example-course/</guid>
-				<description>&lt;p&gt;Syllabus overview, links to slides or notes, and anything students or curious readers should know.&lt;/p&gt;</description>
+				<guid>http://localhost:1313/teaching/csp/</guid>
+				<description>&lt;p&gt;Code.org Computer Science Principles — Content Summary&lt;/p&gt;&#xA;&lt;p&gt;Unit 1: Digital Information&#xA;Core idea: All digital information can be reduced to binary (1s and 0s). &lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Binary representation — computers use base-2; a bit is the smallest unit (0 or 1); a byte = 8 bits. &lt;/li&gt;&#xA;&lt;li&gt;Encoding numbers — binary-to-decimal conversion; overflow error (number too large) and round-off error (value too precise). &lt;/li&gt;&#xA;&lt;li&gt;Encoding text — character encoding schemes (e.g., ASCII, Unicode) map characters to binary codes.&lt;/li&gt;&#xA;&lt;li&gt;Encoding images — pixels stored as binary; B&amp;amp;W images use 1 bit/pixel; color images use RGB (3 bytes per pixel, 24-bit color); hexadecimal notation for compact representation. &lt;/li&gt;&#xA;&lt;li&gt;Compression:&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Lossless — reduces bits without losing information; reversible (e.g., run-length encoding, Huffman coding).&lt;/li&gt;&#xA;&lt;li&gt;Lossy — reduces bits by discarding some information; irreversible (e.g., JPEG, MP3). &lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;Intellectual property — ownership of digital works; Creative Commons licenses; digital rights management. &lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;Unit 2: The Internet&#xA;Core idea: The Internet is a layered system of protocols that routes data between devices. &lt;/p&gt;</description>
 			</item>
 	</channel>
 </rss>

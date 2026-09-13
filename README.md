@@ -1,6 +1,8 @@
-# Personal site
+# There Is An Easier Way
 
-Blog-style portfolio built with [Hugo](https://gohugo.io) and a custom theme (`themes/chalk`), hosted on GitHub Pages.
+Blog-style portfolio built with [Hugo](https://gohugo.io) and a custom theme (`themes/chalk`), hosted on GitHub Pages.  
+
+This site serves as an example of how to host a static site.  
 
 ## Local development
 
