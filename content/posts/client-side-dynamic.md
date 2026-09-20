@@ -1,7 +1,7 @@
 +++
 title = 'Client Side Dynamic Site on Github Pages'
 date = '2026-09-13T16:25:19-04:00'
-draft = true
+draft = false
 description = 'info on a client side dynamic site hosted on github pages'
 tags = []
 +++

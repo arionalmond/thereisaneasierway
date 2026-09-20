@@ -11,6 +11,7 @@ theme = "chalk"
   description = "Ideas, business pursuits, software projects, and teaching."
   # Shown in the footer
   author = "Ari Almond"
+  source = "https://github.com/arionalmond/thereisaneasierway"
 
 [menus]
   [[menus.main]]
