@@ -20,5 +20,19 @@
 				<guid>http://localhost:1313/posts/hugo-github-template/</guid>
 				<description>&lt;p&gt;&lt;a href=&#34;https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-template-repository&#34;&gt;Creating a Github Template Repository&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;I think it is a good idea to create a template for the base configuration of a project.&lt;/p&gt;&#xA;&lt;p&gt;The template can also serve as a way for anyone to replicate a similar project.&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template&#34;&gt;Create a Github Repository from a Template Respository&lt;/a&gt;&lt;/p&gt;</description>
 			</item>
+			<item>
+				<title>Deploying this website</title>
+				<link>http://localhost:1313/posts/deploying-this-website/</link>
+				<pubDate>Sun, 19 Jul 2026 15:30:02 -0400</pubDate>
+				<guid>http://localhost:1313/posts/deploying-this-website/</guid>
+				<description>&lt;p&gt;This site is a static &lt;a href=&#34;https://gohugo.io&#34;&gt;Hugo&lt;/a&gt; build with a custom theme, and getting it live came down to three pieces: a build pipeline, a host, and a domain.&lt;/p&gt;&#xA;&lt;h2 id=&#34;the-build-pipeline&#34;&gt;The build pipeline&lt;/h2&gt;&#xA;&lt;p&gt;Rather than build locally and push the output, I added a GitHub Actions workflow (&lt;code&gt;.github/workflows/hugo.yaml&lt;/code&gt;) that builds the site with Hugo on every push to &lt;code&gt;main&lt;/code&gt; and deploys it to GitHub Pages. The Hugo version in the workflow is pinned to match what&amp;rsquo;s installed locally, so &lt;code&gt;hugo server -D&lt;/code&gt; and CI never drift apart.&lt;/p&gt;</description>
+			</item>
+			<item>
+				<title>Hello, world</title>
+				<link>http://localhost:1313/posts/hello-world/</link>
+				<pubDate>Sun, 19 Jul 2026 09:00:00 -0400</pubDate>
+				<guid>http://localhost:1313/posts/hello-world/</guid>
+				<description>&lt;p&gt;This is the first post. Replace it with your own words — a good opener is &lt;em&gt;why&lt;/em&gt; you&amp;rsquo;re writing in public and what a reader should expect.&lt;/p&gt;&#xA;&lt;p&gt;A few things this theme handles out of the box:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Prose&lt;/strong&gt; set in a readable serif at a comfortable measure.&lt;/li&gt;&#xA;&lt;li&gt;&lt;code&gt;Inline code&lt;/code&gt; and fenced code blocks with syntax highlighting:&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;teach&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;idea&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;explain&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;idea&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;twice&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;True&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;&#xA;&lt;p&gt;Blockquotes for the things other people said better.&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;p&gt;That&amp;rsquo;s it. Write more posts with &lt;code&gt;hugo new content posts/my-next-idea.md&lt;/code&gt;.&lt;/p&gt;</description>
+			</item>
 	</channel>
 </rss>

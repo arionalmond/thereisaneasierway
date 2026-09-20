@@ -3,7 +3,7 @@ title = 'Hello, world'
 date = 2026-07-19T09:00:00-04:00
 draft = false
 description = 'Why this site exists and what to expect here.'
-tags = ['meta']
+tags = ['example post', 'hugo', 'blog', 'website']
 +++
 
 This is the first post. Replace it with your own words — a good opener is *why* you're writing in public and what a reader should expect.

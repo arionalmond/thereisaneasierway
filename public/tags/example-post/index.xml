@@ -1,25 +1,18 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 	<channel>
-		<title>Hugo on There Is An Easier Way</title>
-		<link>http://localhost:1313/tags/hugo/</link>
-		<description>Recent content in Hugo on There Is An Easier Way</description>
+		<title>Example Post on There Is An Easier Way</title>
+		<link>http://localhost:1313/tags/example-post/</link>
+		<description>Recent content in Example Post on There Is An Easier Way</description>
 		<generator>Hugo</generator>
 		<language>en-us</language>
 		
 		
 		
 		
-			<lastBuildDate>Sun, 20 Sep 2026 18:18:41 -0400</lastBuildDate>
+			<lastBuildDate>Sun, 19 Jul 2026 09:00:00 -0400</lastBuildDate>
 		
-			<atom:link href="http://localhost:1313/tags/hugo/index.xml" rel="self" type="application/rss+xml" />
-			<item>
-				<title>Hugo Github Template</title>
-				<link>http://localhost:1313/posts/hugo-github-template/</link>
-				<pubDate>Sun, 20 Sep 2026 18:18:41 -0400</pubDate>
-				<guid>http://localhost:1313/posts/hugo-github-template/</guid>
-				<description>&lt;p&gt;&lt;a href=&#34;https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-template-repository&#34;&gt;Creating a Github Template Repository&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;I think it is a good idea to create a template for the base configuration of a project.&lt;/p&gt;&#xA;&lt;p&gt;The template can also serve as a way for anyone to replicate a similar project.&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template&#34;&gt;Create a Github Repository from a Template Respository&lt;/a&gt;&lt;/p&gt;</description>
-			</item>
+			<atom:link href="http://localhost:1313/tags/example-post/index.xml" rel="self" type="application/rss+xml" />
 			<item>
 				<title>Hello, world</title>
 				<link>http://localhost:1313/posts/hello-world/</link>

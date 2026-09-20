@@ -3,7 +3,7 @@ title = 'Deploying this website'
 date = '2026-07-19T15:30:02-04:00'
 draft = false
 description = 'Notes on wiring up GitHub Actions, GitHub Pages, and Cloudflare DNS to get this site live at thereisaneasierway.com.'
-tags = ['meta']
+tags = ['website']
 +++
 
 This site is a static [Hugo](https://gohugo.io) build with a custom theme, and getting it live came down to three pieces: a build pipeline, a host, and a domain.

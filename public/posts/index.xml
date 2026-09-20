@@ -10,9 +10,16 @@
 		
 		
 		
-			<lastBuildDate>Sun, 13 Sep 2026 16:25:19 -0400</lastBuildDate>
+			<lastBuildDate>Sun, 20 Sep 2026 18:18:41 -0400</lastBuildDate>
 		
 			<atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+			<item>
+				<title>Hugo Github Template</title>
+				<link>http://localhost:1313/posts/hugo-github-template/</link>
+				<pubDate>Sun, 20 Sep 2026 18:18:41 -0400</pubDate>
+				<guid>http://localhost:1313/posts/hugo-github-template/</guid>
+				<description>&lt;p&gt;&lt;a href=&#34;https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-template-repository&#34;&gt;Creating a Github Template Repository&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;I think it is a good idea to create a template for the base configuration of a project.&lt;/p&gt;&#xA;&lt;p&gt;The template can also serve as a way for anyone to replicate a similar project.&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template&#34;&gt;Create a Github Repository from a Template Respository&lt;/a&gt;&lt;/p&gt;</description>
+			</item>
 			<item>
 				<title>Client Side Dynamic Site on Github Pages</title>
 				<link>http://localhost:1313/posts/client-side-dynamic-site-on-github-pages/</link>
