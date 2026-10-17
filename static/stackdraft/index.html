@@ -1,0 +1,2214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Stackdraft: draft a system from parts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+:root {
+  --paper: #E6EAEE; --grid: rgba(23,35,58,.065); --surface: #F7F9FA; --sunk: #EEF1F4;
+  --ink: #17233A; --muted: #556174; --line: #C3CBD5; --line-strong: #8B97A7;
+  --accent: #0D7666; --accent-ink: #FFFFFF; --warn: #8E5200;
+  --l-client: #3361C6; --l-edge: #7A4DC3; --l-app: #0D7666; --l-data: #B0631A; --l-async: #B33A6D; --l-ops: #5A6778;
+  --sans: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  color-scheme: light;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #11171F; --grid: rgba(190,210,235,.05); --surface: #19212B; --sunk: #151C25;
+    --ink: #E2E7ED; --muted: #98A3B2; --line: #2B3543; --line-strong: #4C596B;
+    --accent: #3CC1AC; --accent-ink: #08201C; --warn: #E6AE4A;
+    --l-client: #7EA1EF; --l-edge: #B293EA; --l-app: #3CC1AC; --l-data: #E3A25B; --l-async: #E57EA7; --l-ops: #A3AEBE;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #11171F; --grid: rgba(190,210,235,.05); --surface: #19212B; --sunk: #151C25;
+  --ink: #E2E7ED; --muted: #98A3B2; --line: #2B3543; --line-strong: #4C596B;
+  --accent: #3CC1AC; --accent-ink: #08201C; --warn: #E6AE4A;
+  --l-client: #7EA1EF; --l-edge: #B293EA; --l-app: #3CC1AC; --l-data: #E3A25B; --l-async: #E57EA7; --l-ops: #A3AEBE;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: inherit; }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+body {
+  margin: 0; font-family: var(--sans); color: var(--ink); background-color: var(--paper);
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 24px 24px; font-size: 16px; line-height: 1.5;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--paper); }
+button, input, textarea, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 0 20px 64px; }
+
+header.top { padding: 36px 0 20px; display: grid; gap: 18px; }
+.brand { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.brand h1 {
+  margin: 0; font-weight: 800; font-stretch: 68%; font-size: clamp(2.6rem, 7vw, 4.6rem);
+  line-height: .9; letter-spacing: -.01em;
+}
+.brand p { margin: 0; color: var(--muted); max-width: 46ch; font-size: 1.02rem; }
+nav.tabs { display: flex; gap: 4px; border-bottom: 2px solid var(--ink); flex-wrap: wrap; }
+nav.tabs button {
+  border: 0; background: transparent; padding: 10px 16px 9px; cursor: pointer; font-weight: 600;
+  font-stretch: 88%; font-size: 1.05rem; color: var(--muted); border-radius: 6px 6px 0 0;
+}
+nav.tabs button[aria-selected="true"] { background: var(--ink); color: var(--paper); }
+nav.tabs button:hover:not([aria-selected="true"]) { color: var(--ink); }
+
+.view[hidden] { display: none; }
+h2 { font-stretch: 80%; font-weight: 750; font-size: 1.6rem; line-height: 1.1; margin: 0 0 6px; }
+h3 { font-stretch: 90%; font-weight: 700; font-size: 1.05rem; margin: 0; }
+.lede { color: var(--muted); margin: 0 0 18px; max-width: 70ch; }
+
+/* Build */
+.build { display: grid; grid-template-columns: minmax(300px, 420px) 1fr; gap: 24px; align-items: start; margin-top: 24px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+.meta { padding: 16px; display: grid; gap: 12px; }
+label.field { display: grid; gap: 4px; font-size: .88rem; font-weight: 600; }
+.field input, .field textarea {
+  border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; background: var(--sunk); font-weight: 400; font-size: .95rem;
+}
+.field textarea { min-height: 64px; resize: vertical; }
+.seg { display: flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.seg button { flex: 1; border: 0; background: var(--sunk); padding: 7px 4px; cursor: pointer; font-size: .88rem; font-weight: 600; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.seg-hint { font-size: .82rem; color: var(--muted); font-weight: 400; }
+
+.catalog { margin-top: 16px; display: grid; gap: 18px; }
+.layer-group h3 { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.layer-group h3::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--c); }
+.layer-group h3 span { font-weight: 400; color: var(--muted); font-size: .85rem; font-stretch: 100%; }
+.parts { display: grid; gap: 6px; }
+.part {
+  display: grid; grid-template-columns: 18px 1fr auto; gap: 2px 10px; align-items: start; text-align: left;
+  border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 9px 11px; cursor: pointer;
+}
+.part:hover { border-color: var(--line-strong); }
+.part .box { grid-row: span 2; width: 16px; height: 16px; margin-top: 2px; border: 1.5px solid var(--line-strong); border-radius: 4px; display: grid; place-items: center; }
+.part[aria-pressed="true"] { border-color: var(--c); background: color-mix(in srgb, var(--c) 10%, var(--surface)); }
+.part[aria-pressed="true"] .box { background: var(--c); border-color: var(--c); }
+.part[aria-pressed="true"] .box::after { content: ""; width: 8px; height: 4px; border: 2px solid var(--surface); border-top: 0; border-right: 0; transform: rotate(-45deg) translate(1px, -1px); }
+.part-name { font-weight: 650; font-size: .95rem; }
+.part-desc { grid-column: 2 / 4; color: var(--muted); font-size: .84rem; line-height: 1.35; }
+.badge { font-size: .72rem; padding: 1px 7px; border-radius: 99px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; font-weight: 600; }
+.badge.runs { border-color: color-mix(in srgb, var(--accent) 50%, transparent); color: var(--accent); }
+
+/* Drawing sheet */
+.sheet-col { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); display: grid; gap: 14px; }
+.sheet { background: var(--surface); border: 2px solid var(--ink); border-radius: 4px; padding: 18px; position: relative; }
+.sheet-inner { border: 1px solid var(--line-strong); padding: 10px 14px 14px; }
+.lane { display: grid; grid-template-columns: 120px 1fr; gap: 12px; padding: 12px 0; position: relative; }
+.lane + .lane { border-top: 1px dashed var(--line); }
+.lane-label { font-weight: 750; font-stretch: 78%; font-size: 1.05rem; color: var(--c); line-height: 1.15; padding-top: 6px; }
+.lane-label small { display: block; color: var(--muted); font-weight: 400; font-stretch: 100%; font-size: .75rem; margin-top: 2px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-start; min-height: 38px; }
+.chip {
+  border: 1.5px solid var(--c); background: color-mix(in srgb, var(--c) 12%, var(--surface));
+  border-radius: 6px; padding: 6px 10px; font-weight: 650; font-size: .9rem; display: inline-flex; align-items: center; gap: 8px;
+}
+.chip button { border: 0; background: transparent; cursor: pointer; padding: 0 2px; color: var(--muted); font-size: 1rem; line-height: 1; }
+.chip button:hover { color: var(--ink); }
+.chip.auto { border-style: dashed; }
+.empty-lane { border: 1.5px dashed var(--line); color: var(--muted); border-radius: 6px; padding: 7px 10px; font-size: .85rem; }
+.titleblock { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; border: 1px solid var(--line-strong); border-top: 0; font-size: .8rem; }
+.titleblock div { padding: 6px 10px; border-right: 1px solid var(--line-strong); min-width: 0; }
+.titleblock div:last-child { border-right: 0; }
+.titleblock span { display: block; color: var(--muted); font-size: .7rem; }
+.titleblock strong { display: block; font-size: .95rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.notes { padding: 14px 16px; }
+.notes ul { margin: 6px 0 0; padding-left: 18px; color: var(--muted); font-size: .9rem; }
+.notes li { margin: 4px 0; }
+.notes li.warn { color: var(--warn); }
+.row-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn {
+  border: 1.5px solid var(--ink); background: var(--surface); border-radius: 6px; padding: 8px 14px; cursor: pointer; font-weight: 650; font-size: .92rem;
+}
+.btn.primary { background: var(--ink); color: var(--paper); }
+.btn:hover { border-color: var(--accent); }
+.btn.primary:hover { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+
+/* Examples */
+.ex-head { display: flex; justify-content: space-between; gap: 16px; align-items: end; flex-wrap: wrap; margin-top: 24px; }
+.ex-head .seg { min-width: 300px; }
+.ex { display: grid; grid-template-columns: 280px 1fr; gap: 24px; margin-top: 18px; align-items: start; }
+.ex-list { display: grid; gap: 6px; }
+.ex-tier { font-weight: 750; font-stretch: 80%; font-size: 1rem; margin: 10px 0 2px; color: var(--muted); }
+.ex-item { text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 9px 12px; cursor: pointer; }
+.ex-item strong { display: block; font-size: .98rem; }
+.ex-item span { color: var(--muted); font-size: .84rem; }
+.ex-item[aria-current="true"] { border-color: var(--ink); box-shadow: inset 4px 0 0 var(--ink); }
+.ex-detail { padding: 22px; }
+.ex-detail .scale { color: var(--muted); margin: 2px 0 14px; }
+.ex-lanes .lane-label { padding-top: 2px; }
+.ex-lanes ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.ex-lanes li { font-size: .92rem; line-height: 1.4; }
+.ex-lanes li strong { font-weight: 650; }
+.ex-lanes li span { color: var(--muted); }
+.hosting { background: var(--sunk); border-radius: 8px; padding: 12px 14px; margin: 14px 0; font-size: .93rem; }
+.hosting h3 { margin-bottom: 4px; }
+.source { color: var(--muted); font-size: .82rem; margin: 0 0 14px; }
+
+/* Export */
+.export { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px; align-items: start; }
+.export .panel { padding: 18px; display: grid; gap: 12px; }
+.stackline { font-size: .92rem; color: var(--muted); }
+.stackline strong { color: var(--ink); }
+pre.code {
+  margin: 0; font-family: var(--mono); font-size: .8rem; line-height: 1.5; background: var(--sunk);
+  border: 1px solid var(--line); border-radius: 6px; padding: 12px; overflow: auto; max-height: 460px; white-space: pre;
+}
+pre.prompt { white-space: pre-wrap; }
+.files { display: grid; grid-template-columns: 200px 1fr; gap: 10px; min-height: 300px; }
+.filelist { display: grid; gap: 2px; align-content: start; max-height: 460px; overflow: auto; }
+.filelist button { text-align: left; border: 0; background: transparent; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-family: var(--mono); font-size: .78rem; color: var(--muted); overflow-wrap: anywhere; }
+.filelist button[aria-current="true"] { background: var(--ink); color: var(--paper); }
+.filelist button:hover:not([aria-current="true"]) { color: var(--ink); background: var(--sunk); }
+.status { font-size: .88rem; color: var(--muted); min-height: 1.3em; margin: 0; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: .82rem; color: var(--muted); }
+.included { margin: 0; padding-left: 18px; font-size: .9rem; }
+.included li { margin: 2px 0; }
+.included .muted { color: var(--muted); }
+.empty-state { padding: 40px 20px; text-align: center; color: var(--muted); }
+
+@media (max-width: 920px) {
+  .build, .ex, .export { grid-template-columns: 1fr; }
+  .sheet-col { position: static; order: -1; }
+  .ex-list { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+  .ex-tier { grid-column: 1 / -1; }
+}
+@media (max-width: 560px) {
+  .wrap { padding: 0 12px 48px; }
+  .lane { grid-template-columns: 1fr; gap: 6px; }
+  .titleblock { grid-template-columns: 1fr 1fr; }
+  .titleblock div:nth-child(2) { border-right: 0; }
+  .titleblock div:nth-child(-n+2) { border-bottom: 1px solid var(--line-strong); }
+  .files { grid-template-columns: 1fr; }
+  .filelist { max-height: 160px; }
+  .sheet { padding: 10px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .chip.fresh { animation: drop .28s ease-out; }
+  @keyframes drop { from { transform: translateY(-6px); opacity: 0; } to { transform: none; opacity: 1; } }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>Stackdraft</h1>
+      <p>Pick the parts your system needs, see how real platforms are put together, then export a prompt or a project you can run today.</p>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Sections">
+      <button role="tab" id="tab-build" aria-controls="view-build" aria-selected="true" data-view="build">Build</button>
+      <button role="tab" id="tab-examples" aria-controls="view-examples" aria-selected="false" data-view="examples">Reference systems</button>
+      <button role="tab" id="tab-export" aria-controls="view-export" aria-selected="false" data-view="export">Export</button>
+    </nav>
+  </header>
+
+  <section class="view" id="view-build" role="tabpanel" aria-labelledby="tab-build">
+    <div class="build">
+      <div>
+        <div class="panel meta">
+          <label class="field">Project name
+            <input id="f-name" maxlength="60" autocomplete="off">
+          </label>
+          <div class="field" role="group" aria-labelledby="scale-label">
+            <span id="scale-label">Scale</span>
+            <div class="seg" id="f-scale"></div>
+            <span class="seg-hint" id="scale-hint"></span>
+          </div>
+          <label class="field">What does it do?
+            <textarea id="f-desc" maxlength="600" placeholder="A place for parents to sign up for school volunteer shifts"></textarea>
+          </label>
+        </div>
+        <div class="catalog" id="catalog"></div>
+      </div>
+      <div class="sheet-col">
+        <div class="sheet" aria-label="System drawing">
+          <div class="sheet-inner" id="drawing"></div>
+          <div class="titleblock" id="titleblock"></div>
+        </div>
+        <div class="panel notes" id="notes"></div>
+        <div class="row-actions">
+          <button class="btn primary" data-goto="export">Export this system</button>
+          <button class="btn" id="clear">Clear parts</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="view" id="view-examples" role="tabpanel" aria-labelledby="tab-examples" hidden>
+    <div class="ex-head">
+      <div>
+        <h2>How real systems are built</h2>
+        <p class="lede" style="margin:0">From global platforms down to a one-person site. Open any of them in the builder to use as a starting point.</p>
+      </div>
+      <div class="seg" id="tier-filter"></div>
+    </div>
+    <div class="ex">
+      <div class="ex-list" id="ex-list"></div>
+      <div class="panel ex-detail" id="ex-detail"></div>
+    </div>
+  </section>
+
+  <section class="view" id="view-export" role="tabpanel" aria-labelledby="tab-export" hidden>
+    <div id="export-root"></div>
+  </section>
+</div>
+
+<script>
+// ===================== DATA =====================
+const LAYERS = [
+  { id: 'client', name: 'Clients', hint: 'What people open' },
+  { id: 'edge', name: 'Edge', hint: 'Between the internet and your code' },
+  { id: 'app', name: 'Application', hint: 'Your code and the services it calls' },
+  { id: 'data', name: 'Data', hint: 'Where state lives' },
+  { id: 'async', name: 'Background', hint: 'Work that happens later' },
+  { id: 'ops', name: 'Operations', hint: 'Ship it, run it, watch it' },
+];
+const SCALES = [
+  { id: 'solo', name: 'Solo', hint: 'One person, up to a few thousand visitors a month.' },
+  { id: 'small', name: 'Small', hint: '2–10 people, thousands of users.' },
+  { id: 'medium', name: 'Medium', hint: 'An established business, tens of thousands to a million users.' },
+  { id: 'large', name: 'Large', hint: 'Millions of users, many teams, multiple regions.' },
+];
+const P = (id, name, layer, run, desc, host) => ({ id, name, layer, run, desc, host });
+const PARTS = [
+  P('static', 'Static site', 'client', true, 'Plain HTML, CSS and JavaScript. No build step.', 'Cloudflare Pages, Netlify, or GitHub Pages'),
+  P('react', 'React single-page app', 'client', true, 'A Vite + React app that talks to your API.', 'Build it into the API’s public folder so one service serves both, or Cloudflare Pages'),
+  P('nextjs', 'Next.js app', 'client', true, 'React with server rendering and routing.', 'Vercel or Netlify, with API_ORIGIN pointing at your API'),
+  P('mobile', 'Mobile apps', 'client', false, 'Native iOS and Android clients.', 'Expo / React Native, shipped through the App Store and Google Play'),
+  P('dns', 'Domain, DNS and TLS', 'edge', false, 'Your domain name and HTTPS certificates.', 'Cloudflare or your registrar; TLS is automatic on most hosts, or Caddy on a VPS'),
+  P('cdn', 'CDN', 'edge', false, 'Caches files close to users around the world.', 'Cloudflare, Fastly, or Amazon CloudFront'),
+  P('lb', 'Load balancer / reverse proxy', 'edge', false, 'Spreads traffic across app instances and handles HTTPS.', 'Built into PaaS hosts; Caddy or Nginx on a VPS; AWS ALB at scale'),
+  P('gateway', 'API gateway', 'edge', false, 'One front door for many services: routing, auth, rate limits.', 'Kong, AWS API Gateway, or Envoy'),
+  P('waf', 'WAF and DDoS protection', 'edge', false, 'Filters malicious traffic before it reaches you.', 'Cloudflare or AWS WAF'),
+  P('express', 'Node.js + Express', 'app', true, 'JavaScript server for your API.', 'Render, Railway, or Fly.io (Dockerfile included)'),
+  P('fastapi', 'Python + FastAPI', 'app', true, 'Typed Python API with automatic docs at /docs.', 'Render, Railway, or Fly.io (Dockerfile included)'),
+  P('flask', 'Python + Flask', 'app', true, 'Small, flexible Python web app.', 'Render, Railway, or Fly.io (Dockerfile included)'),
+  P('go', 'Go services', 'app', false, 'Fast compiled services for hot paths.', 'Containers on Fly.io, Amazon ECS, or Kubernetes'),
+  P('realtime', 'Realtime (WebSockets)', 'app', true, 'Live updates and chat without refreshing.', 'Any host with WebSocket support (Render, Fly.io); Ably or Pusher if you want it managed'),
+  P('auth', 'Authentication', 'app', false, 'Sign-in, sessions, password resets, SSO.', 'Clerk, Auth0, Supabase Auth, or a well-tested session library'),
+  P('payments', 'Payments', 'app', false, 'Checkout, subscriptions and invoices.', 'Stripe, starting in test mode'),
+  P('email', 'Transactional email', 'app', true, 'Receipts, resets and notifications (Mailpit locally).', 'Postmark, Resend, or Amazon SES'),
+  P('ml', 'Recommendations / ML', 'app', false, 'Ranks feeds and suggests content.', 'Start with simple rules; later a model service or pgvector'),
+  P('sqlite', 'SQLite', 'data', true, 'A database in one file. Great for solo projects.', 'A persistent volume on Fly.io or a VPS, or Turso'),
+  P('postgres', 'PostgreSQL', 'data', true, 'The default relational database for most apps.', 'Neon, Supabase, Render Postgres, or Amazon RDS'),
+  P('mysql', 'MySQL', 'data', true, 'Widely hosted relational database.', 'PlanetScale, Amazon RDS, or DigitalOcean Managed MySQL'),
+  P('mongodb', 'MongoDB', 'data', true, 'Document database for flexible records.', 'MongoDB Atlas'),
+  P('wide', 'Wide-column store', 'data', false, 'Cassandra or Bigtable-style storage for huge write volumes.', 'DataStax Astra, ScyllaDB Cloud, or Google Bigtable'),
+  P('redis', 'Redis cache', 'data', true, 'In-memory cache, sessions, counters and simple queues.', 'Upstash or Redis Cloud'),
+  P('search', 'Search engine', 'data', true, 'Full-text search (Meilisearch locally).', 'Meilisearch Cloud, Algolia, or OpenSearch'),
+  P('objstore', 'Object storage', 'data', true, 'Files, images and video in S3-compatible buckets (MinIO locally).', 'Cloudflare R2, Amazon S3, or Backblaze B2'),
+  P('worker', 'Background workers', 'async', true, 'Runs jobs outside the request, like sending email.', 'A second service on the same host, such as a Render background worker'),
+  P('rabbitmq', 'Message queue (RabbitMQ)', 'async', true, 'Reliable job delivery between services.', 'CloudAMQP or Amazon MQ'),
+  P('kafka', 'Event stream (Kafka)', 'async', true, 'A durable log of events many services read (Redpanda locally).', 'Confluent Cloud, Redpanda Cloud, or Amazon MSK'),
+  P('cron', 'Scheduled jobs', 'async', false, 'Nightly reports, cleanups and reminders.', 'Render cron jobs, GitHub Actions schedules, or a worker loop'),
+  P('media', 'Media processing', 'async', false, 'Transcodes video and resizes images after upload.', 'ffmpeg in a worker; Mux, Cloudflare Stream, or AWS MediaConvert at scale'),
+  P('docker', 'Containers (Docker)', 'ops', true, 'Packages every service the same way everywhere.', 'Any container host'),
+  P('k8s', 'Kubernetes', 'ops', false, 'Schedules and scales containers across many machines.', 'EKS, GKE, or DigitalOcean Kubernetes, once simpler hosts are outgrown'),
+  P('ci', 'CI/CD (GitHub Actions)', 'ops', true, 'Builds and checks every push automatically.', 'GitHub Actions'),
+  P('monitoring', 'Metrics and alerting', 'ops', false, 'Dashboards and alerts for latency, errors and uptime.', 'Grafana Cloud, Datadog, or Better Stack'),
+  P('logging', 'Error tracking and logs', 'ops', false, 'Captures exceptions and searchable logs.', 'Sentry, Better Stack, or Axiom'),
+  P('analytics', 'Product analytics', 'ops', false, 'What people actually do in your product.', 'Plausible or PostHog'),
+];
+const PART = Object.fromEntries(PARTS.map(p => [p.id, p]));
+
+const EXAMPLES = [
+  {
+    id: 'reddit', tier: 'large', name: 'Reddit', kind: 'Community forums and feeds',
+    scale: 'Hundreds of millions of monthly users, thousands of employees',
+    parts: ['mobile','react','cdn','lb','gateway','waf','go','fastapi','ml','postgres','wide','redis','search','objstore','worker','rabbitmq','kafka','media','docker','k8s','ci','monitoring','logging'],
+    lanes: {
+      client: [['Web app', 'a modern JavaScript front end replaced the original server-rendered pages'], ['iOS and Android apps', 'many users come through mobile']],
+      edge: [['CDN', 'Fastly has been publicly reported in front of pages and media'], ['Load balancers', 'route traffic into the service fleet'], ['GraphQL layer', 'a unified API the clients query']],
+      app: [['Python monolith', 'the original “r2” codebase, gradually split up'], ['Go and Python services', 'newer services for comments, feeds and more'], ['Ranking and safety models', 'sort feeds and flag abuse']],
+      data: [['PostgreSQL', 'core relational data'], ['Cassandra', 'high-volume, write-heavy data'], ['Memcached', 'heavy caching in front of the databases'], ['Amazon S3', 'images and video uploads']],
+      async: [['Job queues', 'RabbitMQ handled async work like vote processing for years'], ['Kafka', 'event streams feeding analytics, safety and feeds'], ['Media pipeline', 'processes uploaded images and video']],
+      ops: [['AWS', 'primary cloud'], ['Kubernetes', 'runs much of the service fleet'], ['Observability', 'metrics, tracing and alerting across services']],
+    },
+    hosting: 'Runs mainly on AWS, with services in containers orchestrated by Kubernetes. A CDN sits in front of almost everything, and caching is aggressive because popular threads are read far more than they are written.',
+    lesson: 'Reads vastly outnumber writes, so caching and a CDN do more work than the databases.',
+  },
+  {
+    id: 'slack', tier: 'large', name: 'Slack', kind: 'Workplace messaging',
+    scale: 'Tens of millions of daily users across hundreds of thousands of organizations',
+    parts: ['mobile','react','cdn','lb','gateway','go','realtime','auth','mysql','redis','search','objstore','worker','kafka','docker','ci','monitoring','logging'],
+    lanes: {
+      client: [['Desktop app', 'built on Electron'], ['Web app', 'same codebase as desktop'], ['iOS and Android apps', 'native mobile clients']],
+      edge: [['Edge proxies', 'Slack has written about moving its edge from HAProxy to Envoy'], ['CDN', 'serves files and static assets']],
+      app: [['Main web app', 'a PHP codebase that moved to Hack on HHVM'], ['Realtime services', 'Java and Go servers keep a WebSocket open to every client and fan out messages'], ['Enterprise auth', 'SSO and SCIM for large customers']],
+      data: [['MySQL with Vitess', 'sharded MySQL for messages and workspaces'], ['Memcached', 'caches hot reads'], ['Search', 'a Solr-based search tier'], ['File storage', 'uploads in Amazon S3']],
+      async: [['Job queue', 'Redis-backed, later re-architected with Kafka in front to absorb spikes'], ['Kafka', 'durable event pipelines']],
+      ops: [['AWS', 'multiple regions'], ['Deploy tooling', 'many deploys a day'], ['Observability', 'tracing and metrics for every message hop']],
+    },
+    hosting: 'Runs on AWS across multiple regions. The interesting part is realtime: every open client keeps a WebSocket to a gateway, and channel servers decide who receives each message.',
+    lesson: 'Realtime delivery is its own system, separate from the app that stores messages.',
+  },
+  {
+    id: 'youtube', tier: 'large', name: 'YouTube', kind: 'Video sharing and streaming',
+    scale: 'Billions of logged-in monthly users, hundreds of hours uploaded every minute',
+    parts: ['mobile','react','cdn','lb','waf','go','fastapi','ml','mysql','wide','redis','objstore','worker','media','docker','k8s','monitoring','logging'],
+    lanes: {
+      client: [['Web player', 'adapts quality to your connection'], ['Mobile and TV apps', 'phones, smart TVs and consoles']],
+      edge: [['Google’s edge network', 'caches popular videos close to viewers'], ['Caches inside ISPs', 'Google Global Cache servers sit in internet providers’ networks']],
+      app: [['Application servers', 'began in Python; now also Go, C++ and Java'], ['Recommendations', 'machine learning ranks the home page and “Up next”']],
+      data: [['Vitess', 'built at YouTube to scale MySQL, later open-sourced'], ['Bigtable-class storage', 'Google’s internal databases for huge datasets'], ['Video blob storage', 'every upload stored in many encoded versions']],
+      async: [['Transcoding pipeline', 'each upload becomes many resolutions and codecs'], ['Custom video chips', 'Google announced its Argos transcoding hardware in 2021']],
+      ops: [['Google infrastructure', 'Borg-style cluster management, the ancestor of Kubernetes'], ['Monitoring', 'at planetary scale']],
+    },
+    hosting: 'Runs on Google’s own data centers and network. Most of the cost and engineering goes into moving bytes: storing many encodings of every video and caching them as close to viewers as possible.',
+    lesson: 'Media systems are dominated by storage, transcoding and delivery, not the web app.',
+  },
+  {
+    id: 'retail', tier: 'medium', name: 'Regional retailer online store', kind: 'E-commerce for an outdoor gear chain',
+    scale: '~80 employees, 3 physical stores, ~15,000 orders a month',
+    parts: ['nextjs','dns','cdn','waf','express','auth','payments','email','postgres','redis','search','objstore','worker','cron','docker','ci','monitoring','logging','analytics'],
+    lanes: {
+      client: [['Next.js storefront', 'fast product pages rendered on the server'], ['Staff admin', 'order and inventory screens behind sign-in']],
+      edge: [['Cloudflare', 'DNS, CDN and bot protection during sales']],
+      app: [['Node.js API', 'cart, checkout and inventory sync with the point-of-sale system'], ['Stripe', 'cards, Apple Pay and refunds'], ['Transactional email', 'receipts and shipping updates']],
+      data: [['Managed PostgreSQL', 'products, orders and customers'], ['Redis', 'cart sessions and cached product pages'], ['Search', 'typo-tolerant catalog search'], ['Object storage', 'product photos']],
+      async: [['Workers', 'send emails and sync stock after each order'], ['Nightly jobs', 'sales reports and abandoned-cart reminders']],
+      ops: [['GitHub Actions', 'tests and deploys on merge'], ['Sentry and uptime checks', 'alerts before customers notice']],
+    },
+    hosting: 'Storefront on Vercel, API and workers on Render or AWS ECS, managed Postgres and Redis. A two- to four-person dev team can run all of it without anyone on call full time.',
+    lesson: 'Buy the hard parts (payments, search, email) and spend engineering time on the store itself.',
+  },
+  {
+    id: 'saas', tier: 'medium', name: 'B2B SaaS company', kind: 'Project tracking software for businesses',
+    scale: '~120 employees, ~40 engineers, ~2,000 business customers',
+    parts: ['react','dns','cdn','lb','waf','fastapi','realtime','auth','payments','email','postgres','redis','search','objstore','worker','rabbitmq','cron','docker','k8s','ci','monitoring','logging','analytics'],
+    lanes: {
+      client: [['React single-page app', 'the product most customers use all day'], ['Public API', 'customers build their own integrations']],
+      edge: [['CDN and WAF', 'static assets plus protection'], ['Load balancer', 'spreads requests across API containers']],
+      app: [['Python API', 'FastAPI or Django services'], ['Realtime updates', 'see teammates’ changes live'], ['SSO and SAML', 'required by larger customers'], ['Stripe Billing', 'seat-based subscriptions']],
+      data: [['PostgreSQL', 'one primary with read replicas'], ['Redis', 'caching and rate limits'], ['Search', 'across tasks and comments'], ['S3', 'attachments and exports']],
+      async: [['RabbitMQ and workers', 'imports, exports, webhooks and notifications'], ['Scheduled jobs', 'digests and billing runs']],
+      ops: [['Kubernetes on AWS', 'EKS, managed by a small platform team'], ['Datadog or Grafana', 'dashboards, alerts and an on-call rotation']],
+    },
+    hosting: 'AWS: EKS or ECS for containers, RDS for Postgres, ElastiCache for Redis, S3 for files. A small platform team owns deploys, monitoring and on-call.',
+    lesson: 'At this size, reliability work (on-call, backups, audits) becomes a team’s whole job.',
+  },
+  {
+    id: 'news', tier: 'medium', name: 'Local news publisher', kind: 'Digital newsroom with subscriptions',
+    scale: '~35 staff, 1–2 million monthly readers, big spikes on breaking news',
+    parts: ['nextjs','dns','cdn','waf','express','auth','payments','email','postgres','search','objstore','cron','ci','monitoring','analytics'],
+    lanes: {
+      client: [['Next.js site', 'article pages pre-rendered and cached'], ['Newsletter', 'daily email to subscribers']],
+      edge: [['CDN', 'serves nearly every page view from cache, which absorbs traffic spikes']],
+      app: [['Headless CMS', 'where editors write and schedule stories'], ['Subscriptions', 'Stripe with a paywall check'], ['Email service', 'newsletters and receipts']],
+      data: [['PostgreSQL', 'subscribers and CMS content'], ['Search', 'archive search for readers'], ['Object storage', 'photos and video clips']],
+      async: [['Scheduled publishing', 'stories go live on time'], ['Image resizing', 'many sizes per photo']],
+      ops: [['Analytics', 'which stories convert readers to subscribers'], ['Uptime alerts', 'the site must stay up during big news']],
+    },
+    hosting: 'Next.js on Vercel or Netlify behind Cloudflare, a hosted CMS, managed Postgres. Caching is the strategy: one popular story might get 100× normal traffic in an hour.',
+    lesson: 'When traffic is spiky and mostly reads, a CDN is your scaling plan.',
+  },
+  {
+    id: 'bakery', tier: 'small', name: 'Neighborhood bakery', kind: 'Website with weekly pre-orders',
+    scale: '3 employees, ~40 pre-orders a week',
+    parts: ['static','dns','flask','payments','email','sqlite','docker'],
+    lanes: {
+      client: [['Simple website', 'menu, hours and a pre-order form']],
+      edge: [['Domain and HTTPS', 'handled by the host']],
+      app: [['Small Flask app', 'takes orders and shows the owner a list for the morning'], ['Stripe Checkout', 'a hosted payment page, so no card data touches the app'], ['Order emails', 'confirmations to customers']],
+      data: [['SQLite', 'one file holds every order; backed up nightly']],
+      async: [],
+      ops: [['One container', 'easy to move between hosts']],
+    },
+    hosting: 'One small instance on Render or Fly.io with a persistent disk, or a $5–6 VPS. Total cost is usually under $15 a month plus Stripe fees.',
+    lesson: 'One app, one file-based database and a hosted checkout covers a real business.',
+  },
+  {
+    id: 'microsaas', tier: 'small', name: 'Two-person micro-SaaS', kind: 'Scheduling tool for tutors',
+    scale: '2 founders, ~500 paying users',
+    parts: ['nextjs','dns','express','auth','payments','email','postgres','worker','redis','ci','logging','analytics'],
+    lanes: {
+      client: [['Next.js app', 'marketing pages and the product in one codebase']],
+      edge: [['Host’s edge', 'Vercel handles CDN and HTTPS']],
+      app: [['API', 'bookings, availability and reminders'], ['Auth service', 'Clerk or Supabase Auth instead of rolling their own'], ['Stripe', 'monthly subscriptions'], ['Email', 'booking confirmations and reminders']],
+      data: [['Managed Postgres', 'Neon or Supabase'], ['Redis', 'a simple job queue (Upstash)']],
+      async: [['Worker', 'sends reminder emails an hour before each session']],
+      ops: [['GitHub Actions', 'deploy on push'], ['Sentry and PostHog', 'errors and product usage']],
+    },
+    hosting: 'Vercel for the app, Neon for Postgres, Upstash for Redis, Resend for email. Mostly free tiers until revenue arrives.',
+    lesson: 'Managed services let two people run something that would once have needed a team.',
+  },
+  {
+    id: 'portfolio', tier: 'small', name: 'Solo developer site', kind: 'Blog, portfolio and project write-ups',
+    scale: '1 person, a few thousand readers a month',
+    parts: ['static','dns','cdn','ci','analytics'],
+    lanes: {
+      client: [['Static site', 'generated with Hugo, Astro or Eleventy from Markdown']],
+      edge: [['CDN', 'included with the host, so pages load fast everywhere'], ['Domain', 'one custom domain with automatic HTTPS']],
+      app: [],
+      data: [['Git repository', 'posts are files; the history is the backup']],
+      async: [],
+      ops: [['Deploy on push', 'GitHub Actions or the host’s build'], ['Privacy-friendly analytics', 'Plausible or none at all']],
+    },
+    hosting: 'Cloudflare Pages, Netlify or GitHub Pages, usually free. There’s no server to patch and nothing to keep running.',
+    lesson: 'If nothing changes per visitor, there doesn’t need to be a server.',
+  },
+];
+
+// ===================== GEN-START =====================
+const RUNNABLE_BACKENDS = ['express', 'fastapi', 'flask'];
+const SERVICE_DEFS = {
+  postgres: { name: 'postgres', healthy: true, volume: 'pgdata', yaml: [
+    '  postgres:', '    image: postgres:16', '    environment:', '      POSTGRES_USER: app', '      POSTGRES_PASSWORD: app', '      POSTGRES_DB: app',
+    '    ports: ["5432:5432"]', '    volumes: ["pgdata:/var/lib/postgresql/data"]',
+    '    healthcheck:', '      test: ["CMD-SHELL", "pg_isready -U app"]', '      interval: 3s', '      retries: 30'],
+    env: [['POSTGRES_URL', 'postgresql://app:app@postgres:5432/app']], ui: 'PostgreSQL on localhost:5432 (user app, password app)' },
+  mysql: { name: 'mysql', healthy: true, volume: 'mysqldata', yaml: [
+    '  mysql:', '    image: mysql:8.4', '    environment:', '      MYSQL_DATABASE: app', '      MYSQL_USER: app', '      MYSQL_PASSWORD: app', '      MYSQL_ROOT_PASSWORD: root',
+    '    ports: ["3306:3306"]', '    volumes: ["mysqldata:/var/lib/mysql"]',
+    '    healthcheck:', '      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]', '      interval: 3s', '      retries: 40'],
+    env: [['MYSQL_URL', 'mysql://app:app@mysql:3306/app']], ui: 'MySQL on localhost:3306 (user app, password app)' },
+  mongodb: { name: 'mongodb', healthy: false, volume: 'mongodata', yaml: [
+    '  mongodb:', '    image: mongo:7', '    ports: ["27017:27017"]', '    volumes: ["mongodata:/data/db"]'],
+    env: [['MONGO_URL', 'mongodb://mongodb:27017/app']], ui: 'MongoDB on localhost:27017' },
+  redis: { name: 'redis', healthy: false, yaml: [
+    '  redis:', '    image: redis:7-alpine', '    ports: ["6379:6379"]'],
+    env: [['REDIS_URL', 'redis://redis:6379']], ui: 'Redis on localhost:6379' },
+  search: { name: 'search', healthy: false, volume: 'meilidata', yaml: [
+    '  search:', '    image: getmeili/meilisearch:v1.10', '    environment:', '      MEILI_MASTER_KEY: dev-master-key-change-me', '      MEILI_ENV: development',
+    '    ports: ["7700:7700"]', '    volumes: ["meilidata:/meili_data"]'],
+    env: [['SEARCH_URL', 'http://search:7700'], ['SEARCH_KEY', 'dev-master-key-change-me']], ui: 'Meilisearch dashboard at http://localhost:7700' },
+  objstore: { name: 'objstore', healthy: false, volume: 'miniodata', yaml: [
+    '  objstore:', '    image: minio/minio:latest', '    command: server /data --console-address ":9001"',
+    '    environment:', '      MINIO_ROOT_USER: minio', '      MINIO_ROOT_PASSWORD: minio-secret',
+    '    ports: ["9000:9000", "9001:9001"]', '    volumes: ["miniodata:/data"]'],
+    env: [['S3_ENDPOINT', 'http://objstore:9000'], ['S3_ACCESS_KEY', 'minio'], ['S3_SECRET_KEY', 'minio-secret'], ['S3_BUCKET', 'uploads']],
+    ui: 'MinIO console at http://localhost:9001 (user minio, password minio-secret)' },
+  rabbitmq: { name: 'rabbitmq', healthy: true, yaml: [
+    '  rabbitmq:', '    image: rabbitmq:3-management', '    environment:', '      RABBITMQ_DEFAULT_USER: app', '      RABBITMQ_DEFAULT_PASS: app',
+    '    ports: ["5672:5672", "15672:15672"]',
+    '    healthcheck:', '      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]', '      interval: 5s', '      retries: 30'],
+    env: [['AMQP_URL', 'amqp://app:app@rabbitmq:5672']], ui: 'RabbitMQ management at http://localhost:15672 (user app, password app)' },
+  kafka: { name: 'kafka', healthy: false, yaml: [
+    '  kafka:', '    image: docker.redpanda.com/redpandadata/redpanda:v24.2.7',
+    '    command: ["redpanda", "start", "--mode", "dev-container", "--smp", "1", "--kafka-addr", "PLAINTEXT://0.0.0.0:9092", "--advertise-kafka-addr", "PLAINTEXT://kafka:9092"]',
+    '    ports: ["9092:9092"]'],
+    env: [['KAFKA_BROKERS', 'kafka:9092']], ui: 'Kafka-compatible broker (Redpanda) at kafka:9092 inside the network' },
+  email: { name: 'mailpit', healthy: false, yaml: [
+    '  mailpit:', '    image: axllent/mailpit:latest', '    ports: ["1025:1025", "8025:8025"]'],
+    env: [['SMTP_HOST', 'mailpit'], ['SMTP_PORT', '1025']], ui: 'Mailpit inbox at http://localhost:8025 (catches every email the app sends)' },
+};
+
+function slugify(s) { return (String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'my-system').slice(0, 48); }
+
+function analyze(selected) {
+  const has = new Set(selected);
+  const notes = [];
+  const added = [];
+  const add = (id, why) => { if (!has.has(id)) { has.add(id); added.push(id); notes.push({ warn: false, text: why }); } };
+  const pick = (order) => order.filter(id => has.has(id));
+
+  const fronts = pick(['nextjs', 'react', 'static']);
+  let frontend = fronts[0] || null;
+  if (fronts.length > 1) notes.push({ warn: true, text: 'You picked more than one client framework. The starter project uses ' + PART[frontend].name + '; the others stay in the plan.' });
+
+  const backs = pick(RUNNABLE_BACKENDS);
+  let backend = backs[0] || null;
+  if (backs.length > 1) notes.push({ warn: true, text: 'More than one API framework is selected. The starter project uses ' + PART[backend].name + '.' });
+  if (has.has('go')) notes.push({ warn: false, text: 'Go services are described in the plan, but the starter project doesn’t include Go code yet.' });
+
+  if (has.has('worker') && !has.has('rabbitmq') && !has.has('redis')) add('redis', 'Background workers need a queue, so Redis was added to hold jobs.');
+
+  const needsServer = ['sqlite','postgres','mysql','mongodb','redis','search','objstore','worker','rabbitmq','kafka','realtime','email','auth','payments'].filter(id => has.has(id));
+  if (!backend && (needsServer.length || has.has('go'))) {
+    backend = 'express';
+    add('express', 'Added Node.js + Express because ' + PART[needsServer[0] || 'go'].name + ' needs server code to talk to.');
+  }
+  if (has.has('k8s') && !has.has('docker')) add('docker', 'Kubernetes runs containers, so Containers (Docker) was added.');
+  if (backend && !has.has('docker')) add('docker', 'The starter project runs everything with Docker Compose, so Containers (Docker) was added.');
+  if (has.has('media') && !has.has('objstore')) notes.push({ warn: true, text: 'Media processing usually needs Object storage for the original and processed files.' });
+  if (has.has('sqlite') && (has.has('k8s') || has.has('lb'))) notes.push({ warn: true, text: 'SQLite lives on one machine’s disk, so it doesn’t work with several app instances behind a load balancer. Consider PostgreSQL.' });
+  if (has.has('kafka') && !has.has('worker')) notes.push({ warn: false, text: 'Kafka is included as a running broker; add Background workers if you want something consuming events.' });
+
+  const dbs = pick(['postgres', 'mysql', 'mongodb', 'sqlite']);
+  const primary = dbs[0] || null;
+  const queue = has.has('worker') ? (has.has('rabbitmq') ? 'rabbitmq' : 'redis') : null;
+  const services = ['postgres','mysql','mongodb','redis','search','objstore','rabbitmq','kafka','email'].filter(id => has.has(id));
+  const port = backend === 'express' ? 3000 : 8000;
+  return { has, notes, added, frontend, backend, dbs, primary, queue, services, port };
+}
+
+// ---------- Node / Express ----------
+function nodeServer(a, project) {
+  const h = (id) => a.has.has(id);
+  const parts = [];
+  parts.push(`const express = require('express');
+const path = require('path');
+const net = require('net');` + (h('realtime') ? `
+const { WebSocketServer } = require('ws');` : '') + `
+
+const PROJECT = ${JSON.stringify(project)};
+const app = express();
+app.use(express.json());
+const checks = {};
+
+function tcpCheck(host, port) {
+  return new Promise((resolve, reject) => {
+    const s = net.connect(Number(port), host);
+    s.setTimeout(2000);
+    s.on('connect', () => { s.end(); resolve(); });
+    s.on('timeout', () => { s.destroy(); reject(new Error('timeout')); });
+    s.on('error', reject);
+  });
+}
+`);
+  if (h('postgres')) parts.push(`// PostgreSQL
+const { Pool } = require('pg');
+const pg = new Pool({ connectionString: process.env.POSTGRES_URL });
+checks.postgres = () => pg.query('SELECT 1');
+`);
+  if (h('mysql')) parts.push(`// MySQL
+const mysql = require('mysql2/promise');
+const my = mysql.createPool(process.env.MYSQL_URL);
+checks.mysql = () => my.query('SELECT 1');
+`);
+  if (h('mongodb')) parts.push(`// MongoDB
+const { MongoClient, ObjectId } = require('mongodb');
+const mongo = new MongoClient(process.env.MONGO_URL, { serverSelectionTimeoutMS: 2000 });
+let mongoReady = null;
+const mongoDb = async () => { if (!mongoReady) mongoReady = mongo.connect(); await mongoReady; return mongo.db(); };
+checks.mongodb = async () => { await (await mongoDb()).command({ ping: 1 }); };
+`);
+  if (h('sqlite')) parts.push(`// SQLite
+const Database = require('better-sqlite3');
+const sq = new Database(process.env.SQLITE_PATH || 'data.db');
+checks.sqlite = async () => sq.prepare('SELECT 1').get();
+`);
+  const store = {
+    postgres: `const notes = {
+  init: () => pg.query('CREATE TABLE IF NOT EXISTS notes (id SERIAL PRIMARY KEY, body TEXT NOT NULL, created_at TIMESTAMPTZ DEFAULT now())'),
+  list: async () => (await pg.query('SELECT * FROM notes ORDER BY id DESC LIMIT 50')).rows,
+  add: async (body) => (await pg.query('INSERT INTO notes (body) VALUES ($1) RETURNING *', [body])).rows[0],
+};`,
+    mysql: `const notes = {
+  init: () => my.query('CREATE TABLE IF NOT EXISTS notes (id INT AUTO_INCREMENT PRIMARY KEY, body TEXT NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)'),
+  list: async () => (await my.query('SELECT * FROM notes ORDER BY id DESC LIMIT 50'))[0],
+  add: async (body) => {
+    const [r] = await my.query('INSERT INTO notes (body) VALUES (?)', [body]);
+    return (await my.query('SELECT * FROM notes WHERE id = ?', [r.insertId]))[0][0];
+  },
+};`,
+    mongodb: `const toNote = (d) => ({ id: String(d._id), body: d.body, created_at: d.created_at });
+const notes = {
+  init: async () => { await (await mongoDb()).command({ ping: 1 }); },
+  list: async () => (await (await mongoDb()).collection('notes').find().sort({ _id: -1 }).limit(50).toArray()).map(toNote),
+  add: async (body) => {
+    const doc = { body, created_at: new Date() };
+    const r = await (await mongoDb()).collection('notes').insertOne(doc);
+    return toNote({ ...doc, _id: r.insertedId });
+  },
+};`,
+    sqlite: `const notes = {
+  init: async () => sq.exec('CREATE TABLE IF NOT EXISTS notes (id INTEGER PRIMARY KEY AUTOINCREMENT, body TEXT NOT NULL, created_at TEXT DEFAULT CURRENT_TIMESTAMP)'),
+  list: async () => sq.prepare('SELECT * FROM notes ORDER BY id DESC LIMIT 50').all(),
+  add: async (body) => {
+    const r = sq.prepare('INSERT INTO notes (body) VALUES (?)').run(body);
+    return sq.prepare('SELECT * FROM notes WHERE id = ?').get(r.lastInsertRowid);
+  },
+};`,
+    memory: `// No database selected: notes live in memory and reset on restart.
+const memory = [];
+const notes = {
+  init: async () => {},
+  list: async () => memory.slice().reverse(),
+  add: async (body) => { const n = { id: memory.length + 1, body, created_at: new Date().toISOString() }; memory.push(n); return n; },
+};`,
+  };
+  parts.push(`// Notes: a tiny example resource stored in your primary database
+${store[a.primary || 'memory']}
+`);
+  if (h('redis')) parts.push(`// Redis
+const { createClient } = require('redis');
+const redis = createClient({ url: process.env.REDIS_URL });
+redis.on('error', (e) => console.error('redis:', e.message));
+const redisReady = redis.connect();
+checks.redis = async () => { await redisReady; await redis.ping(); };
+`);
+  if (h('rabbitmq')) parts.push(`// RabbitMQ
+const amqp = require('amqplib');
+let amqpConn = null;
+async function amqpChannel() {
+  if (!amqpConn) {
+    amqpConn = await amqp.connect(process.env.AMQP_URL);
+    amqpConn.on('close', () => { amqpConn = null; });
+  }
+  return amqpConn.createChannel();
+}
+checks.rabbitmq = async () => { const ch = await amqpChannel(); await ch.close(); };
+`);
+  if (a.queue === 'rabbitmq') parts.push(`async function enqueue(job) {
+  const ch = await amqpChannel();
+  await ch.assertQueue('jobs', { durable: true });
+  ch.sendToQueue('jobs', Buffer.from(JSON.stringify(job)), { persistent: true });
+  await ch.close();
+}
+`);
+  if (a.queue === 'redis') parts.push(`async function enqueue(job) {
+  await redisReady;
+  await redis.lPush('jobs', JSON.stringify(job));
+}
+`);
+  if (h('search')) parts.push(`// Search (Meilisearch)
+const SEARCH_URL = process.env.SEARCH_URL;
+const searchHeaders = { 'Content-Type': 'application/json', Authorization: 'Bearer ' + process.env.SEARCH_KEY };
+checks.search = async () => { const r = await fetch(SEARCH_URL + '/health'); if (!r.ok) throw new Error('HTTP ' + r.status); };
+async function indexNote(note) {
+  await fetch(SEARCH_URL + '/indexes/notes/documents?primaryKey=id', { method: 'POST', headers: searchHeaders, body: JSON.stringify([note]) });
+}
+async function searchNotes(q) {
+  const r = await fetch(SEARCH_URL + '/indexes/notes/search', { method: 'POST', headers: searchHeaders, body: JSON.stringify({ q }) });
+  const data = await r.json();
+  return data.hits || [];
+}
+`);
+  if (h('objstore')) parts.push(`// Object storage (S3-compatible; MinIO locally)
+checks.objstore = async () => { const r = await fetch(process.env.S3_ENDPOINT + '/minio/health/live'); if (!r.ok) throw new Error('HTTP ' + r.status); };
+`);
+  if (h('kafka')) parts.push(`// Kafka-compatible broker
+checks.kafka = () => { const [host, port] = process.env.KAFKA_BROKERS.split(',')[0].split(':'); return tcpCheck(host, port); };
+`);
+  if (h('email')) parts.push(`// Email (Mailpit locally; swap SMTP settings for Postmark, Resend or SES)
+const nodemailer = require('nodemailer');
+const mailer = nodemailer.createTransport({ host: process.env.SMTP_HOST, port: Number(process.env.SMTP_PORT || 1025), secure: false });
+checks.email = () => tcpCheck(process.env.SMTP_HOST, process.env.SMTP_PORT || 1025);
+`);
+  parts.push(`// Routes
+app.get('/api/health', async (req, res) => {
+  const services = {};
+  for (const [name, check] of Object.entries(checks)) {
+    try { await check(); services[name] = 'ok'; } catch (e) { services[name] = 'error: ' + e.message; }
+  }
+  res.json({ status: 'ok', project: PROJECT, services });
+});
+
+app.get('/api/notes', async (req, res) => {
+  try {` + (h('redis') ? `
+    await redisReady;
+    const hit = await redis.get('notes:recent');
+    if (hit) return res.json(JSON.parse(hit));` : '') + `
+    const rows = await notes.list();` + (h('redis') ? `
+    await redis.set('notes:recent', JSON.stringify(rows), { EX: 30 });` : '') + `
+    res.json(rows);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post('/api/notes', async (req, res) => {
+  const body = String((req.body && req.body.body) || '').trim();
+  if (!body) return res.status(400).json({ error: 'body is required' });
+  try {
+    const note = await notes.add(body);` + (h('redis') ? `
+    await redis.del('notes:recent');` : '') + (h('search') ? `
+    await indexNote(note);` : '') + `
+    res.status(201).json(note);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+`);
+  if (h('search')) parts.push(`app.get('/api/search', async (req, res) => {
+  try { res.json(await searchNotes(String(req.query.q || ''))); } catch (e) { res.status(500).json({ error: e.message }); }
+});
+`);
+  if (a.queue) parts.push(`app.post('/api/jobs', async (req, res) => {
+  try { await enqueue({ ...(req.body || {}), queued_at: new Date().toISOString() }); res.status(202).json({ queued: true }); }
+  catch (e) { res.status(500).json({ error: e.message }); }
+});
+`);
+  if (h('email')) parts.push(`app.post('/api/test-email', async (req, res) => {
+  try {
+    await mailer.sendMail({ from: 'app@example.test', to: 'you@example.test', subject: 'Test from ' + PROJECT, text: 'If you can read this in Mailpit, email works.' });
+    res.json({ sent: true, inbox: 'http://localhost:8025' });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+`);
+  parts.push(`// Serves the built front end (or the static demo page) from ./public
+app.use(express.static(path.join(__dirname, 'public')));
+
+const PORT = Number(process.env.PORT || 3000);
+async function start() {
+  for (let i = 1; ; i++) {
+    try { await notes.init(); break; } catch (e) {
+      if (i >= 30) throw e;
+      console.log('Waiting for the database... (' + e.message + ')');
+      await new Promise((r) => setTimeout(r, 2000));
+    }
+  }
+  const server = app.listen(PORT, () => console.log(PROJECT + ' API listening on http://localhost:' + PORT));` + (h('realtime') ? `
+
+  // Realtime: every message is broadcast to every connected client
+  const wss = new WebSocketServer({ server, path: '/ws' });
+  wss.on('connection', (ws) => {
+    ws.on('message', (data) => {
+      for (const client of wss.clients) if (client.readyState === 1) client.send(String(data));
+    });
+  });` : '') + `
+}
+start().catch((e) => { console.error(e); process.exit(1); });
+`);
+  return parts.join('\n');
+}
+
+function nodeWorker(a) {
+  if (a.queue === 'rabbitmq') return `const amqp = require('amqplib');
+
+async function main() {
+  for (;;) {
+    try {
+      const conn = await amqp.connect(process.env.AMQP_URL);
+      const ch = await conn.createChannel();
+      await ch.assertQueue('jobs', { durable: true });
+      console.log('Worker waiting for jobs on queue "jobs"');
+      ch.consume('jobs', (msg) => {
+        const job = JSON.parse(msg.content.toString());
+        console.log('Processing job', job); // do the real work here
+        ch.ack(msg);
+      });
+      return;
+    } catch (e) {
+      console.log('Waiting for RabbitMQ... (' + e.message + ')');
+      await new Promise((r) => setTimeout(r, 2000));
+    }
+  }
+}
+main();
+`;
+  return `const { createClient } = require('redis');
+
+async function main() {
+  const client = createClient({ url: process.env.REDIS_URL });
+  client.on('error', (e) => console.error('redis:', e.message));
+  await client.connect();
+  console.log('Worker waiting for jobs on list "jobs"');
+  for (;;) {
+    const item = await client.brPop('jobs', 0);
+    console.log('Processing job', JSON.parse(item.element)); // do the real work here
+  }
+}
+main().catch((e) => { console.error(e); process.exit(1); });
+`;
+}
+
+function nodePackage(a, slug) {
+  const h = (id) => a.has.has(id);
+  const deps = { express: '^4.21.1' };
+  if (h('postgres')) deps.pg = '^8.13.0';
+  if (h('mysql')) deps.mysql2 = '^3.11.3';
+  if (h('mongodb')) deps.mongodb = '^6.9.0';
+  if (h('sqlite')) deps['better-sqlite3'] = '^11.3.0';
+  if (h('redis')) deps.redis = '^4.7.0';
+  if (h('rabbitmq')) deps.amqplib = '^0.10.4';
+  if (h('realtime')) deps.ws = '^8.18.0';
+  if (h('email')) deps.nodemailer = '^6.9.15';
+  const scripts = { start: 'node server.js' };
+  if (a.queue) scripts.worker = 'node worker.js';
+  return JSON.stringify({ name: slug + '-api', private: true, version: '0.1.0', scripts, dependencies: deps }, null, 2) + '\n';
+}
+
+// ---------- Python ----------
+function pyServices(a, project) {
+  const h = (id) => a.has.has(id);
+  const P = [];
+  P.push(`import json
+import os
+import smtplib
+import socket
+import time
+import urllib.request
+from datetime import datetime, timezone
+from email.message import EmailMessage
+
+PROJECT = ${JSON.stringify(project)}
+CHECKS = {}
+
+
+def tcp_check(host, port):
+    socket.create_connection((host, int(port)), timeout=2).close()
+
+
+def http_check(url):
+    with urllib.request.urlopen(url, timeout=2) as r:
+        if r.status >= 400:
+            raise RuntimeError("HTTP %s" % r.status)
+
+
+def run_checks():
+    out = {}
+    for name, fn in CHECKS.items():
+        try:
+            fn()
+            out[name] = "ok"
+        except Exception as e:
+            out[name] = "error: %s" % e
+    return out
+`);
+  if (h('postgres')) P.push(`
+# PostgreSQL
+import psycopg
+from psycopg.rows import dict_row
+
+POSTGRES_URL = os.environ["POSTGRES_URL"]
+
+
+def pg():
+    return psycopg.connect(POSTGRES_URL, row_factory=dict_row)
+
+
+def _check_postgres():
+    with pg() as c:
+        c.execute("SELECT 1")
+
+
+CHECKS["postgres"] = _check_postgres
+`);
+  if (h('mysql')) P.push(`
+# MySQL
+import pymysql
+from urllib.parse import urlparse
+
+_my = urlparse(os.environ["MYSQL_URL"])
+
+
+def my():
+    return pymysql.connect(host=_my.hostname, port=_my.port or 3306, user=_my.username, password=_my.password,
+                           database=_my.path.lstrip("/"), cursorclass=pymysql.cursors.DictCursor, autocommit=True)
+
+
+def _check_mysql():
+    c = my()
+    c.ping()
+    c.close()
+
+
+CHECKS["mysql"] = _check_mysql
+`);
+  if (h('mongodb')) P.push(`
+# MongoDB
+from pymongo import MongoClient
+
+mongo = MongoClient(os.environ["MONGO_URL"], serverSelectionTimeoutMS=2000)
+mdb = mongo.get_default_database()
+CHECKS["mongodb"] = lambda: mdb.command("ping")
+`);
+  if (h('sqlite')) P.push(`
+# SQLite
+import sqlite3
+
+SQLITE_PATH = os.environ.get("SQLITE_PATH", "data.db")
+
+
+def sq():
+    c = sqlite3.connect(SQLITE_PATH)
+    c.row_factory = sqlite3.Row
+    return c
+
+
+CHECKS["sqlite"] = lambda: sq().execute("SELECT 1").fetchone()
+`);
+  const rowFn = `
+
+def _row(r):
+    return {"id": r["id"], "body": r["body"], "created_at": str(r["created_at"])}
+`;
+  const store = {
+    postgres: `
+def init_db():
+    with pg() as c:
+        c.execute("CREATE TABLE IF NOT EXISTS notes (id SERIAL PRIMARY KEY, body TEXT NOT NULL, created_at TIMESTAMPTZ DEFAULT now())")
+${rowFn}
+
+def db_list_notes():
+    with pg() as c:
+        return [_row(r) for r in c.execute("SELECT * FROM notes ORDER BY id DESC LIMIT 50").fetchall()]
+
+
+def db_add_note(body):
+    with pg() as c:
+        return _row(c.execute("INSERT INTO notes (body) VALUES (%s) RETURNING *", (body,)).fetchone())
+`,
+    mysql: `
+def init_db():
+    c = my()
+    with c.cursor() as cur:
+        cur.execute("CREATE TABLE IF NOT EXISTS notes (id INT AUTO_INCREMENT PRIMARY KEY, body TEXT NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)")
+    c.close()
+${rowFn}
+
+def db_list_notes():
+    c = my()
+    with c.cursor() as cur:
+        cur.execute("SELECT * FROM notes ORDER BY id DESC LIMIT 50")
+        rows = cur.fetchall()
+    c.close()
+    return [_row(r) for r in rows]
+
+
+def db_add_note(body):
+    c = my()
+    with c.cursor() as cur:
+        cur.execute("INSERT INTO notes (body) VALUES (%s)", (body,))
+        cur.execute("SELECT * FROM notes WHERE id = %s", (cur.lastrowid,))
+        r = cur.fetchone()
+    c.close()
+    return _row(r)
+`,
+    mongodb: `
+def init_db():
+    mdb.command("ping")
+
+
+def _row(d):
+    return {"id": str(d["_id"]), "body": d["body"], "created_at": str(d["created_at"])}
+
+
+def db_list_notes():
+    return [_row(d) for d in mdb.notes.find().sort("_id", -1).limit(50)]
+
+
+def db_add_note(body):
+    d = {"body": body, "created_at": datetime.now(timezone.utc)}
+    mdb.notes.insert_one(d)
+    return _row(d)
+`,
+    sqlite: `
+def init_db():
+    with sq() as c:
+        c.execute("CREATE TABLE IF NOT EXISTS notes (id INTEGER PRIMARY KEY AUTOINCREMENT, body TEXT NOT NULL, created_at TEXT DEFAULT CURRENT_TIMESTAMP)")
+${rowFn}
+
+def db_list_notes():
+    with sq() as c:
+        return [_row(r) for r in c.execute("SELECT * FROM notes ORDER BY id DESC LIMIT 50").fetchall()]
+
+
+def db_add_note(body):
+    with sq() as c:
+        cur = c.execute("INSERT INTO notes (body) VALUES (?)", (body,))
+        return _row(c.execute("SELECT * FROM notes WHERE id = ?", (cur.lastrowid,)).fetchone())
+`,
+    memory: `
+# No database selected: notes live in memory and reset on restart.
+_memory = []
+
+
+def init_db():
+    pass
+
+
+def db_list_notes():
+    return list(reversed(_memory))
+
+
+def db_add_note(body):
+    n = {"id": len(_memory) + 1, "body": body, "created_at": datetime.now(timezone.utc).isoformat()}
+    _memory.append(n)
+    return n
+`,
+  };
+  P.push(`
+# Notes: a tiny example resource stored in your primary database
+${store[a.primary || 'memory']}`);
+  if (h('redis')) P.push(`
+# Redis
+import redis as redislib
+
+rds = redislib.Redis.from_url(os.environ["REDIS_URL"], decode_responses=True)
+CHECKS["redis"] = lambda: rds.ping()
+`);
+  if (h('rabbitmq')) P.push(`
+# RabbitMQ
+import pika
+
+
+def amqp_connect():
+    return pika.BlockingConnection(pika.URLParameters(os.environ["AMQP_URL"]))
+
+
+def _check_rabbitmq():
+    amqp_connect().close()
+
+
+CHECKS["rabbitmq"] = _check_rabbitmq
+`);
+  if (a.queue === 'rabbitmq') P.push(`
+
+def enqueue(job):
+    conn = amqp_connect()
+    ch = conn.channel()
+    ch.queue_declare(queue="jobs", durable=True)
+    ch.basic_publish(exchange="", routing_key="jobs", body=json.dumps(job), properties=pika.BasicProperties(delivery_mode=2))
+    conn.close()
+`);
+  if (a.queue === 'redis') P.push(`
+
+def enqueue(job):
+    rds.lpush("jobs", json.dumps(job))
+`);
+  if (h('search')) P.push(`
+# Search (Meilisearch)
+SEARCH_URL = os.environ["SEARCH_URL"]
+
+
+def _search_req(path, payload):
+    req = urllib.request.Request(SEARCH_URL + path, data=json.dumps(payload).encode(), method="POST",
+                                 headers={"Content-Type": "application/json", "Authorization": "Bearer " + os.environ.get("SEARCH_KEY", "")})
+    with urllib.request.urlopen(req, timeout=5) as r:
+        return json.loads(r.read() or b"{}")
+
+
+CHECKS["search"] = lambda: http_check(SEARCH_URL + "/health")
+
+
+def index_note(note):
+    _search_req("/indexes/notes/documents?primaryKey=id", [note])
+
+
+def search_notes(q):
+    try:
+        return _search_req("/indexes/notes/search", {"q": q}).get("hits", [])
+    except Exception:
+        return []
+`);
+  if (h('objstore')) P.push(`
+# Object storage (S3-compatible; MinIO locally)
+CHECKS["objstore"] = lambda: http_check(os.environ["S3_ENDPOINT"] + "/minio/health/live")
+`);
+  if (h('kafka')) P.push(`
+
+# Kafka-compatible broker
+def _check_kafka():
+    host, port = os.environ["KAFKA_BROKERS"].split(",")[0].split(":")
+    tcp_check(host, port)
+
+
+CHECKS["kafka"] = _check_kafka
+`);
+  if (h('email')) P.push(`
+
+# Email (Mailpit locally; swap SMTP settings for Postmark, Resend or SES)
+def _check_email():
+    tcp_check(os.environ["SMTP_HOST"], os.environ.get("SMTP_PORT", "1025"))
+
+
+CHECKS["email"] = _check_email
+
+
+def send_test_email():
+    msg = EmailMessage()
+    msg["From"] = "app@example.test"
+    msg["To"] = "you@example.test"
+    msg["Subject"] = "Test from " + PROJECT
+    msg.set_content("If you can read this in Mailpit, email works.")
+    with smtplib.SMTP(os.environ["SMTP_HOST"], int(os.environ.get("SMTP_PORT", "1025"))) as s:
+        s.send_message(msg)
+`);
+  P.push(`
+
+def list_notes():` + (h('redis') ? `
+    hit = rds.get("notes:recent")
+    if hit:
+        return json.loads(hit)` : '') + `
+    rows = db_list_notes()` + (h('redis') ? `
+    rds.set("notes:recent", json.dumps(rows), ex=30)` : '') + `
+    return rows
+
+
+def add_note(body):
+    note = db_add_note(body)` + (h('redis') ? `
+    rds.delete("notes:recent")` : '') + (h('search') ? `
+    index_note(note)` : '') + `
+    return note
+
+
+def wait_for_services(tries=30):
+    for i in range(tries):
+        try:
+            init_db()
+            return
+        except Exception as e:
+            print("Waiting for the database... (%s)" % e, flush=True)
+            time.sleep(2)
+    init_db()
+`);
+  return P.join('');
+}
+
+function pyFastapi(a) {
+  const h = (id) => a.has.has(id);
+  return `import os
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI, HTTPException` + (h('realtime') ? `, WebSocket, WebSocketDisconnect` : '') + `
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
+
+import services
+
+
+@asynccontextmanager
+async def lifespan(app):
+    services.wait_for_services()
+    yield
+
+
+app = FastAPI(title=services.PROJECT, lifespan=lifespan)
+
+
+class NoteIn(BaseModel):
+    body: str
+
+
+@app.get("/api/health")
+def health():
+    return {"status": "ok", "project": services.PROJECT, "services": services.run_checks()}
+
+
+@app.get("/api/notes")
+def list_notes():
+    return services.list_notes()
+
+
+@app.post("/api/notes", status_code=201)
+def add_note(note: NoteIn):
+    body = note.body.strip()
+    if not body:
+        raise HTTPException(status_code=400, detail="body is required")
+    return services.add_note(body)
+` + (h('search') ? `
+
+@app.get("/api/search")
+def search(q: str = ""):
+    return services.search_notes(q)
+` : '') + (a.queue ? `
+
+@app.post("/api/jobs", status_code=202)
+def queue_job(job: dict):
+    services.enqueue(job)
+    return {"queued": True}
+` : '') + (h('email') ? `
+
+@app.post("/api/test-email")
+def test_email():
+    services.send_test_email()
+    return {"sent": True, "inbox": "http://localhost:8025"}
+` : '') + (h('realtime') ? `
+
+# Realtime: every message is broadcast to every connected client
+clients = set()
+
+
+@app.websocket("/ws")
+async def ws(sock: WebSocket):
+    await sock.accept()
+    clients.add(sock)
+    try:
+        while True:
+            msg = await sock.receive_text()
+            for c in list(clients):
+                await c.send_text(msg)
+    except WebSocketDisconnect:
+        clients.discard(sock)
+` : '') + `
+
+# Serves the built front end (or the static demo page) from ./public
+if os.path.isdir("public"):
+    app.mount("/", StaticFiles(directory="public", html=True), name="public")
+`;
+}
+
+function pyFlask(a) {
+  const h = (id) => a.has.has(id);
+  return `import os
+
+from flask import Flask, jsonify, request` + (h('realtime') ? `
+from flask_sock import Sock` : '') + `
+
+import services
+
+# Serves the built front end (or the static demo page) from ./public
+app = Flask(__name__, static_folder="public", static_url_path="")
+services.wait_for_services()
+
+
+@app.get("/")
+def index():
+    if os.path.exists(os.path.join(app.static_folder, "index.html")):
+        return app.send_static_file("index.html")
+    return jsonify({"project": services.PROJECT, "try": "/api/health"})
+
+
+@app.get("/api/health")
+def health():
+    return jsonify({"status": "ok", "project": services.PROJECT, "services": services.run_checks()})
+
+
+@app.get("/api/notes")
+def list_notes():
+    return jsonify(services.list_notes())
+
+
+@app.post("/api/notes")
+def add_note():
+    body = str((request.get_json(silent=True) or {}).get("body", "")).strip()
+    if not body:
+        return jsonify({"error": "body is required"}), 400
+    return jsonify(services.add_note(body)), 201
+` + (h('search') ? `
+
+@app.get("/api/search")
+def search():
+    return jsonify(services.search_notes(request.args.get("q", "")))
+` : '') + (a.queue ? `
+
+@app.post("/api/jobs")
+def queue_job():
+    services.enqueue(request.get_json(silent=True) or {})
+    return jsonify({"queued": True}), 202
+` : '') + (h('email') ? `
+
+@app.post("/api/test-email")
+def test_email():
+    services.send_test_email()
+    return jsonify({"sent": True, "inbox": "http://localhost:8025"})
+` : '') + (h('realtime') ? `
+
+# Realtime: every message is broadcast to every connected client
+sock = Sock(app)
+clients = set()
+
+
+@sock.route("/ws")
+def ws(conn):
+    clients.add(conn)
+    try:
+        while True:
+            msg = conn.receive()
+            for c in list(clients):
+                try:
+                    c.send(msg)
+                except Exception:
+                    clients.discard(c)
+    finally:
+        clients.discard(conn)
+` : '') + `
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", "8000")), debug=True, use_reloader=False)
+`;
+}
+
+function pyWorker(a) {
+  if (a.queue === 'rabbitmq') return `import json
+import time
+
+import services
+
+
+def handle(ch, method, props, body):
+    print("Processing job", json.loads(body), flush=True)  # do the real work here
+    ch.basic_ack(delivery_tag=method.delivery_tag)
+
+
+while True:
+    try:
+        conn = services.amqp_connect()
+        ch = conn.channel()
+        ch.queue_declare(queue="jobs", durable=True)
+        ch.basic_consume(queue="jobs", on_message_callback=handle)
+        print('Worker waiting for jobs on queue "jobs"', flush=True)
+        ch.start_consuming()
+    except Exception as e:
+        print("Waiting for RabbitMQ... (%s)" % e, flush=True)
+        time.sleep(2)
+`;
+  return `import json
+
+import services
+
+print('Worker waiting for jobs on list "jobs"', flush=True)
+while True:
+    _, raw = services.rds.brpop("jobs")
+    print("Processing job", json.loads(raw), flush=True)  # do the real work here
+`;
+}
+
+function pyRequirements(a) {
+  const h = (id) => a.has.has(id);
+  const r = a.backend === 'fastapi' ? ['fastapi>=0.115', 'uvicorn[standard]>=0.30'] : ['flask>=3.0'];
+  if (a.backend === 'flask' && h('realtime')) r.push('flask-sock>=0.7');
+  if (h('postgres')) r.push('psycopg[binary]>=3.2');
+  if (h('mysql')) r.push('pymysql>=1.1', 'cryptography>=43');
+  if (h('mongodb')) r.push('pymongo>=4.8');
+  if (h('redis')) r.push('redis>=5.0');
+  if (h('rabbitmq')) r.push('pika>=1.3');
+  return r.join('\n') + '\n';
+}
+
+// ---------- Front ends ----------
+function demoFeatures(a) {
+  return { api: !!a.backend, search: a.has.has('search'), realtime: a.has.has('realtime'), jobs: !!a.queue, email: a.has.has('email') };
+}
+
+function staticDemo(a, project) {
+  const f = demoFeatures(a);
+  const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  const html = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${esc(project)}</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <h1>${esc(project)}</h1>
+` + (f.api ? `    <p>Your local stack is running. This page talks to the API and checks each service.</p>
+    <section>
+      <h2>Services</h2>
+      <ul id="services"><li>Checking…</li></ul>
+    </section>
+    <section>
+      <h2>Notes</h2>
+      <form id="note-form"><input id="note" placeholder="Write a note" required><button>Save note</button></form>
+      <ul id="notes"></ul>
+    </section>
+` + (f.search ? `    <section>
+      <h2>Search</h2>
+      <input id="q" placeholder="Search your notes">
+      <ul id="results"></ul>
+    </section>
+` : '') + (f.realtime ? `    <section>
+      <h2>Live messages</h2>
+      <p>Open this page in two tabs and send a message.</p>
+      <form id="chat-form"><input id="chat" placeholder="Say something" required><button>Send</button></form>
+      <ul id="chat-log"></ul>
+    </section>
+` : '') + (f.jobs ? `    <section>
+      <h2>Background jobs</h2>
+      <button id="job">Queue a job</button>
+      <p>Watch it get processed: <code>docker compose logs -f worker</code></p>
+    </section>
+` : '') + (f.email ? `    <section>
+      <h2>Email</h2>
+      <button id="email">Send a test email</button>
+      <p>Open the inbox at <a href="http://localhost:8025">localhost:8025</a>.</p>
+    </section>
+` : '') + `  </main>
+  <script src="app.js"><\/script>
+` : `    <p>This is your static site. Edit <code>index.html</code> and <code>style.css</code>, then follow the README to put it online.</p>
+  </main>
+`) + `</body>
+</html>
+`;
+  const js = !f.api ? null : `async function api(path, opts) {
+  const r = await fetch(path, opts);
+  if (!r.ok) throw new Error(path + ' returned ' + r.status);
+  return r.json();
+}
+const post = (path, data) => api(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data || {}) });
+function li(text) { const el = document.createElement('li'); el.textContent = text; return el; }
+
+async function loadHealth() {
+  const ul = document.getElementById('services');
+  try {
+    const h = await api('/api/health');
+    const rows = Object.entries(h.services).map(([k, v]) => li(k + ': ' + v));
+    ul.replaceChildren(...(rows.length ? rows : [li('API is up. No external services to check.')]));
+  } catch (e) { ul.replaceChildren(li('API not reachable: ' + e.message)); }
+}
+
+async function loadNotes() {
+  const ul = document.getElementById('notes');
+  try { ul.replaceChildren(...(await api('/api/notes')).map((n) => li(n.body))); }
+  catch (e) { ul.replaceChildren(li(e.message)); }
+}
+
+document.getElementById('note-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const input = document.getElementById('note');
+  await post('/api/notes', { body: input.value });
+  input.value = '';
+  loadNotes();
+});
+` + (f.search ? `
+document.getElementById('q').addEventListener('input', async (e) => {
+  const rows = await api('/api/search?q=' + encodeURIComponent(e.target.value));
+  document.getElementById('results').replaceChildren(...rows.map((n) => li(n.body)));
+});
+` : '') + (f.realtime ? `
+const ws = new WebSocket(location.origin.replace(/^http/, 'ws') + '/ws');
+ws.onmessage = (m) => document.getElementById('chat-log').prepend(li(m.data));
+document.getElementById('chat-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const input = document.getElementById('chat');
+  ws.send(input.value);
+  input.value = '';
+});
+` : '') + (f.jobs ? `
+document.getElementById('job').addEventListener('click', async () => {
+  await post('/api/jobs', { type: 'demo' });
+  alert('Job queued. Check the worker logs.');
+});
+` : '') + (f.email ? `
+document.getElementById('email').addEventListener('click', async () => {
+  await post('/api/test-email');
+  alert('Sent. Open http://localhost:8025 to see it.');
+});
+` : '') + `
+loadHealth();
+loadNotes();
+`;
+  const css = `body { font-family: system-ui, sans-serif; max-width: 680px; margin: 40px auto; padding: 0 16px; line-height: 1.5; }
+section { border-top: 1px solid #ddd; padding: 12px 0; }
+input { padding: 6px 8px; min-width: 240px; }
+button { padding: 6px 12px; cursor: pointer; }
+code { background: #f2f2f2; padding: 1px 4px; border-radius: 3px; }
+@media (prefers-color-scheme: dark) { body { background: #16191d; color: #e6e6e6; } code { background: #2a2e34; } section { border-color: #333; } }
+`;
+  return { html, js, css };
+}
+
+function reactApp(a) {
+  const f = demoFeatures(a);
+  if (!f.api) return `export default function App() {
+  return (
+    <main>
+      <h1>Hello from React</h1>
+      <p>Edit <code>App.jsx</code> to start building. Follow the README to put it online.</p>
+    </main>
+  );
+}
+`;
+  return `import { useEffect, useState } from 'react';
+
+async function api(path, opts) {
+  const r = await fetch(path, opts);
+  if (!r.ok) throw new Error(path + ' returned ' + r.status);
+  return r.json();
+}
+const post = (path, data) => api(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data || {}) });
+
+export default function App({ wsUrl }) {
+  const [services, setServices] = useState(null);
+  const [error, setError] = useState('');
+  const [notes, setNotes] = useState([]);
+  const [draft, setDraft] = useState('');` + (f.search ? `
+  const [q, setQ] = useState('');
+  const [hits, setHits] = useState([]);` : '') + (f.realtime ? `
+  const [log, setLog] = useState([]);
+  const [msg, setMsg] = useState('');
+  const [sock, setSock] = useState(null);` : '') + `
+
+  useEffect(() => {
+    api('/api/health').then((h) => setServices(h.services)).catch((e) => setError(e.message));
+    api('/api/notes').then(setNotes).catch(() => {});
+  }, []);` + (f.search ? `
+
+  useEffect(() => {
+    api('/api/search?q=' + encodeURIComponent(q)).then(setHits).catch(() => setHits([]));
+  }, [q]);` : '') + (f.realtime ? `
+
+  useEffect(() => {
+    const ws = new WebSocket(wsUrl);
+    ws.onmessage = (m) => setLog((l) => [m.data, ...l]);
+    setSock(ws);
+    return () => ws.close();
+  }, [wsUrl]);` : '') + `
+
+  async function addNote(e) {
+    e.preventDefault();
+    if (!draft.trim()) return;
+    await post('/api/notes', { body: draft });
+    setDraft('');
+    setNotes(await api('/api/notes'));
+  }
+
+  return (
+    <main>
+      <h1>Your stack is running</h1>
+      <section>
+        <h2>Services</h2>
+        {error && <p>API not reachable: {error}</p>}
+        <ul>
+          {services && Object.entries(services).map(([k, v]) => <li key={k}>{k}: {v}</li>)}
+          {services && Object.keys(services).length === 0 && <li>API is up. No external services to check.</li>}
+        </ul>
+      </section>
+      <section>
+        <h2>Notes</h2>
+        <form onSubmit={addNote}>
+          <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Write a note" />
+          <button>Save note</button>
+        </form>
+        <ul>{notes.map((n) => <li key={n.id}>{n.body}</li>)}</ul>
+      </section>` + (f.search ? `
+      <section>
+        <h2>Search</h2>
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search your notes" />
+        <ul>{hits.map((n) => <li key={n.id}>{n.body}</li>)}</ul>
+      </section>` : '') + (f.realtime ? `
+      <section>
+        <h2>Live messages</h2>
+        <p>Open this page in two tabs and send a message.</p>
+        <form onSubmit={(e) => { e.preventDefault(); if (sock && msg) { sock.send(msg); setMsg(''); } }}>
+          <input value={msg} onChange={(e) => setMsg(e.target.value)} placeholder="Say something" />
+          <button>Send</button>
+        </form>
+        <ul>{log.map((m, i) => <li key={i}>{m}</li>)}</ul>
+      </section>` : '') + (f.jobs ? `
+      <section>
+        <h2>Background jobs</h2>
+        <button onClick={() => post('/api/jobs', { type: 'demo' }).then(() => alert('Job queued. Check the worker logs.'))}>Queue a job</button>
+      </section>` : '') + (f.email ? `
+      <section>
+        <h2>Email</h2>
+        <button onClick={() => post('/api/test-email').then(() => alert('Sent. Open http://localhost:8025 to see it.'))}>Send a test email</button>
+      </section>` : '') + `
+    </main>
+  );
+}
+`;
+}
+
+const REACT_CSS = `body { font-family: system-ui, sans-serif; max-width: 680px; margin: 40px auto; padding: 0 16px; line-height: 1.5; }
+section { border-top: 1px solid #ddd; padding: 12px 0; }
+input { padding: 6px 8px; min-width: 240px; }
+button { padding: 6px 12px; cursor: pointer; }
+@media (prefers-color-scheme: dark) { body { background: #16191d; color: #e6e6e6; } section { border-color: #333; } }
+`;
+
+// ---------- Compose, env, CI, deploy ----------
+function composeFile(a) {
+  const L = ['services:'];
+  const deps = a.services.map(id => SERVICE_DEFS[id]);
+  const dependsBlock = (list) => {
+    if (!list.length) return [];
+    const out = ['    depends_on:'];
+    list.forEach(d => { out.push('      ' + d.name + ':', '        condition: ' + (d.healthy ? 'service_healthy' : 'service_started')); });
+    return out;
+  };
+  const isNode = a.backend === 'express';
+  const sqliteVol = a.has.has('sqlite') ? ['    volumes: ["sqlitedata:/data"]'] : [];
+  L.push('  api:', '    build: ./api', '    env_file: .env', '    ports: ["' + a.port + ':' + a.port + '"]', ...sqliteVol, ...dependsBlock(deps));
+  if (a.queue) {
+    L.push('', '  worker:', '    build: ./api', '    command: ' + (isNode ? '["node", "worker.js"]' : '["python", "worker.py"]'), '    env_file: .env', ...dependsBlock(deps));
+  }
+  if (a.frontend === 'react') {
+    L.push('', '  web:', '    image: node:20-slim', '    working_dir: /web', '    volumes: ["./web:/web", "/web/node_modules"]',
+      '    command: sh -c "npm install && npm run dev"', '    environment:', '      API_TARGET: http://api:' + a.port, '    ports: ["5173:5173"]', '    depends_on: [api]');
+  }
+  if (a.frontend === 'nextjs') {
+    L.push('', '  web:', '    image: node:20-slim', '    working_dir: /web', '    volumes: ["./web:/web", "/web/node_modules", "/web/.next"]',
+      '    command: sh -c "npm install && npm run dev"', '    environment:', '      API_ORIGIN: http://api:' + a.port, '    ports: ["3001:3001"]', '    depends_on: [api]');
+  }
+  deps.forEach(d => { L.push(''); L.push(...d.yaml); });
+  const vols = deps.map(d => d.volume).filter(Boolean);
+  if (a.has.has('sqlite')) vols.push('sqlitedata');
+  if (vols.length) { L.push('', 'volumes:'); vols.forEach(v => L.push('  ' + v + ':')); }
+  return L.join('\n') + '\n';
+}
+
+function envFile(a, example) {
+  const L = ['# ' + (example ? 'Copy to .env and change values for production. Never commit real secrets.' : 'Local development values. Safe defaults for your machine only; .env is git-ignored.'), 'PORT=' + a.port];
+  if (a.has.has('sqlite')) L.push('SQLITE_PATH=/data/app.db');
+  a.services.forEach(id => { L.push(''); L.push('# ' + PART[id].name); SERVICE_DEFS[id].env.forEach(([k, v]) => L.push(k + '=' + v)); });
+  if (a.has.has('payments')) L.push('', '# Payments: add your Stripe test key when you wire up checkout', 'STRIPE_SECRET_KEY=sk_test_replace_me');
+  if (a.has.has('auth')) L.push('', '# Authentication: provider keys go here (Clerk, Auth0, Supabase...)', 'AUTH_SECRET=replace-with-a-long-random-string');
+  return L.join('\n') + '\n';
+}
+
+function ciWorkflow(a) {
+  if (a.backend) return `name: CI
+on: [push, pull_request]
+jobs:
+  stack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and start the stack
+        run: docker compose up -d --build api
+      - name: Wait for the API to report healthy
+        run: |
+          for i in $(seq 1 45); do curl -fs http://localhost:${a.port}/api/health && exit 0; sleep 2; done
+          docker compose logs api
+          exit 1
+      - name: Stop
+        if: always()
+        run: docker compose down -v
+`;
+  if (a.frontend === 'static' || !a.frontend) return `name: Deploy to GitHub Pages
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - uses: actions/deploy-pages@v4
+`;
+  return `name: CI
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - run: npm run build
+`;
+}
+
+function hostingFor(id) { return PART[id] ? PART[id].host : ''; }
+
+function readme(a, state, files) {
+  const project = state.name || 'My system';
+  const scale = SCALES.find(s => s.id === state.scale) || SCALES[1];
+  const sel = [...a.has];
+  const runs = sel.filter(id => PART[id].run);
+  const plan = sel.filter(id => !PART[id].run);
+  const L = [];
+  L.push('# ' + project, '');
+  if (state.desc) L.push(state.desc.trim(), '');
+  L.push('Scale: **' + scale.name + '**. ' + scale.hint, '', 'Generated with Stackdraft. This is a working starting point, not a finished product: every service is wired up and checked, and a tiny "notes" feature shows data flowing end to end.', '');
+  L.push('## What’s in this project', '');
+  L.push('| Part | Layer | Status |', '| --- | --- | --- |');
+  LAYERS.forEach(layer => sel.filter(id => PART[id].layer === layer.id).forEach(id => {
+    L.push('| ' + PART[id].name + ' | ' + layer.name + ' | ' + (PART[id].run ? 'Runs locally' : 'Plan only, see below') + ' |');
+  }));
+  L.push('');
+  L.push('## Project layout', '', '```');
+  files.map(f => f.path).sort().forEach(p => L.push(p));
+  L.push('```', '');
+
+  L.push('## Run it locally', '');
+  if (a.backend) {
+    L.push('You need [Docker Desktop](https://www.docker.com/products/docker-desktop/) (or Docker Engine with Compose v2).', '');
+    L.push('```bash', 'docker compose up --build', '```', '');
+    L.push('The first run downloads images and installs packages, so give it a few minutes. Then open:', '');
+    if (a.frontend === 'react') L.push('- App: http://localhost:5173');
+    if (a.frontend === 'nextjs') L.push('- App: http://localhost:3001');
+    L.push('- API: http://localhost:' + a.port + (a.frontend === 'static' ? ' (also serves the demo page)' : ''));
+    L.push('- Health check: http://localhost:' + a.port + '/api/health');
+    if (a.backend === 'fastapi') L.push('- Interactive API docs: http://localhost:' + a.port + '/docs');
+    a.services.forEach(id => L.push('- ' + SERVICE_DEFS[id].ui));
+    L.push('', 'Try the API from a terminal:', '', '```bash',
+      'curl http://localhost:' + a.port + '/api/health',
+      'curl -X POST http://localhost:' + a.port + '/api/notes -H "Content-Type: application/json" -d \'{"body":"hello"}\'',
+      'curl http://localhost:' + a.port + '/api/notes');
+    if (a.queue) L.push('curl -X POST http://localhost:' + a.port + '/api/jobs -H "Content-Type: application/json" -d \'{"type":"demo"}\'', 'docker compose logs -f worker');
+    L.push('```', '');
+    L.push('Stop everything with `docker compose down`. Add `-v` to also delete the database volumes and start fresh.', '');
+    L.push('Every connection setting lives in `.env`. Inside Docker, services reach each other by name (`postgres`, `redis`, ...). From your own machine they are on `localhost` at the ports listed above.', '');
+  } else if (a.frontend === 'react' || a.frontend === 'nextjs') {
+    L.push('You need Node.js 20 or newer.', '', '```bash', 'cd web', 'npm install', 'npm run dev', '```', '', 'Then open ' + (a.frontend === 'react' ? 'http://localhost:5173' : 'http://localhost:3001') + '.', '');
+  } else {
+    L.push('No build step. Open `site/index.html` in a browser, or serve the folder so links behave like they will online:', '', '```bash', 'npx serve site', '# or: python3 -m http.server --directory site 8080', '```', '');
+  }
+
+  L.push('## From local to hosted', '');
+  if (a.backend) {
+    L.push('Pick one path. Path A is less to manage; Path B is cheaper and teaches you more about servers.', '');
+    L.push('### Path A: managed services (fastest)', '');
+    L.push('1. Push this project to a GitHub repository. `.env` is ignored, so your local values stay local.');
+    L.push('2. Create the managed data services first and copy each connection string:');
+    a.services.forEach(id => L.push('   - ' + PART[id].name + ': ' + hostingFor(id)));
+    if (a.has.has('sqlite')) L.push('   - SQLite: ' + hostingFor('sqlite'));
+    if (!a.services.length && !a.has.has('sqlite')) L.push('   - None needed yet.');
+    L.push('3. Deploy `api/` as a web service on ' + hostingFor(a.backend) + '. Point it at the `api` folder\'s Dockerfile and add every variable from `.env.example` with the production values from step 2.');
+    if (a.queue) L.push('4. Deploy the same `api/` folder a second time as a background worker with the start command `' + (a.backend === 'express' ? 'node worker.js' : 'python worker.py') + '`.');
+    if (a.frontend === 'react') L.push('- Front end: run `npm run build` in `web/` and copy `web/dist/*` into `api/public/` so the API serves the app from the same domain. No CORS setup needed.');
+    if (a.frontend === 'nextjs') L.push('- Front end: import the repository into ' + hostingFor('nextjs') + ', set the root directory to `web`, and set `API_ORIGIN` to your API\'s public URL.');
+    L.push('- Visit `https://YOUR-API/api/health` and confirm every service says `ok`.', '');
+    L.push('### Path B: one VPS with Docker Compose (cheapest)', '');
+    L.push('1. Rent a small Ubuntu server (Hetzner, DigitalOcean, Linode; 2 GB RAM is enough to start).');
+    L.push('2. Point your domain\'s A record at the server\'s IP address.');
+    L.push('3. On the server: install Docker (`curl -fsSL https://get.docker.com | sh`), clone your repository, and create `.env` from `.env.example` with **strong new passwords** (update the matching values in `docker-compose.yml` too).');
+    L.push('4. Edit `deploy/Caddyfile` with your domain, then start everything with automatic HTTPS:', '', '   ```bash', '   docker compose -f docker-compose.yml -f deploy/compose.caddy.yml up -d --build', '   ```', '');
+    L.push('5. Remove the `ports:` lines from the database services in `docker-compose.yml` so they are not reachable from the internet. Only Caddy should face the world.');
+    L.push('6. Set up nightly backups of your database volumes (or switch to a managed database later).', '');
+  } else if (a.frontend === 'nextjs') {
+    L.push('1. Push to GitHub.', '2. Import the repository into ' + hostingFor('nextjs') + ' and set the root directory to `web`.', '3. Add your domain in the host\'s settings; HTTPS is automatic.', '');
+  } else if (a.frontend === 'react') {
+    L.push('1. Push to GitHub.', '2. Create a project on Cloudflare Pages or Netlify with root directory `web`, build command `npm run build`, output directory `dist`.', '3. Add your domain; HTTPS is automatic.', '');
+  } else {
+    L.push('1. Push to GitHub.', '2. Pick a host: ' + hostingFor('static') + '. Set the publish directory to `site` (no build command).', '3. Add your custom domain in the host\'s settings; HTTPS is automatic.', '');
+    if (a.has.has('ci')) L.push('The included workflow deploys `site/` to GitHub Pages on every push to `main`. In your repository settings, set Pages → Source to "GitHub Actions".', '');
+  }
+
+  if (plan.length) {
+    L.push('## Parts you still need to wire up', '', 'These are in your design but not in the generated code, because they depend on accounts and choices only you can make.', '');
+    plan.forEach(id => L.push('- **' + PART[id].name + '.** ' + PART[id].desc + ' Options: ' + PART[id].host + '.'));
+    L.push('');
+  }
+  L.push('## Next steps', '');
+  L.push(a.backend ? '- [ ] Run it locally and confirm `/api/health` shows every service as `ok`' : '- [ ] Run it locally and confirm the page loads');
+  L.push('- [ ] Replace the example "notes" feature with your first real feature');
+  L.push('- [ ] Commit to Git and push to GitHub');
+  if (a.has.has('auth')) L.push('- [ ] Add authentication before storing anything personal');
+  if (a.has.has('payments')) L.push('- [ ] Build checkout in Stripe test mode before switching to live keys');
+  L.push('- [ ] Deploy using one of the paths above');
+  if (a.backend) L.push('- [ ] Turn on database backups and an uptime check');
+  L.push('');
+  return L.join('\n');
+}
+
+function buildProject(state) {
+  const a = analyze(state.selected);
+  const project = (state.name || 'My system').trim() || 'My system';
+  const slug = slugify(project);
+  const files = [];
+  const add = (path, content) => files.push({ path, content });
+
+  if (!a.backend) {
+    if (a.frontend === 'react') addVite(a, add, project);
+    else if (a.frontend === 'nextjs') addNext(a, add, project);
+    else { const s = staticDemo(a, project); add('site/index.html', s.html); add('site/style.css', s.css); }
+  } else {
+    if (a.backend === 'express') {
+      add('api/package.json', nodePackage(a, slug));
+      add('api/server.js', nodeServer(a, project));
+      if (a.queue) add('api/worker.js', nodeWorker(a));
+      add('api/Dockerfile', 'FROM node:20-slim\nWORKDIR /app\nCOPY package.json ./\nRUN npm install --omit=dev\nCOPY . .\nEXPOSE 3000\nCMD ["node", "server.js"]\n');
+      add('api/.dockerignore', 'node_modules\n');
+    } else {
+      add('api/requirements.txt', pyRequirements(a));
+      add('api/services.py', pyServices(a, project));
+      if (a.backend === 'fastapi') add('api/main.py', pyFastapi(a)); else add('api/app.py', pyFlask(a));
+      if (a.queue) add('api/worker.py', pyWorker(a));
+      const cmd = a.backend === 'fastapi' ? '["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]' : '["python", "app.py"]';
+      add('api/Dockerfile', 'FROM python:3.12-slim\nENV PYTHONUNBUFFERED=1\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install --no-cache-dir -r requirements.txt\nCOPY . .\nEXPOSE 8000\nCMD ' + cmd + '\n');
+      add('api/.dockerignore', '__pycache__\n*.db\n');
+    }
+    if (a.frontend === 'static' || !a.frontend) {
+      const s = staticDemo(a, project);
+      add('api/public/index.html', s.html); add('api/public/style.css', s.css); add('api/public/app.js', s.js);
+    } else if (a.frontend === 'react') addVite(a, add, project);
+    else if (a.frontend === 'nextjs') addNext(a, add, project);
+    add('docker-compose.yml', composeFile(a));
+    add('.env', envFile(a, false));
+    add('.env.example', envFile(a, true));
+    add('deploy/Caddyfile', '# Replace example.com with your domain. Its DNS A record must point at this server.\nexample.com {\n\treverse_proxy api:' + a.port + '\n}\n');
+    add('deploy/compose.caddy.yml', 'services:\n  caddy:\n    image: caddy:2\n    restart: unless-stopped\n    ports: ["80:80", "443:443"]\n    volumes:\n      - ./deploy/Caddyfile:/etc/caddy/Caddyfile\n      - caddy_data:/data\n    depends_on: [api]\n\nvolumes:\n  caddy_data:\n');
+  }
+  if (a.has.has('ci')) add('.github/workflows/' + (a.backend || a.frontend === 'react' || a.frontend === 'nextjs' ? 'ci.yml' : 'pages.yml'), ciWorkflow(a));
+  add('.gitignore', 'node_modules/\n.env\n__pycache__/\n*.db\n.next/\ndist/\n.DS_Store\n');
+  files.unshift({ path: 'README.md', content: '' });
+  files[0].content = readme(a, state, files);
+  return { a, slug, files };
+}
+
+function addVite(a, add, project) {
+  add('web/package.json', JSON.stringify({ name: slugify(project) + '-web', private: true, version: '0.1.0', type: 'module',
+    scripts: { dev: 'vite', build: 'vite build', preview: 'vite preview' },
+    dependencies: { react: '^18.3.1', 'react-dom': '^18.3.1' },
+    devDependencies: { vite: '^5.4.8', '@vitejs/plugin-react': '^4.3.2' } }, null, 2) + '\n');
+  add('web/vite.config.js', `import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+// In Docker, API_TARGET is http://api:${a.port}. Outside Docker it defaults to localhost.
+const target = process.env.API_TARGET || 'http://localhost:${a.port}';
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    host: true,
+    port: 5173,
+    proxy: {
+      '/api': target,
+      '/ws': { target: target.replace(/^http/, 'ws'), ws: true },
+    },
+  },
+});
+`);
+  add('web/index.html', `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>${project.replace(/</g, '&lt;')}</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"><\/script>
+  </body>
+</html>
+`);
+  add('web/src/main.jsx', `import React from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App.jsx';
+import './style.css';
+
+createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <App wsUrl={location.origin.replace(/^http/, 'ws') + '/ws'} />
+  </React.StrictMode>
+);
+`);
+  add('web/src/App.jsx', reactApp(a));
+  add('web/src/style.css', REACT_CSS);
+}
+
+function addNext(a, add, project) {
+  add('web/package.json', JSON.stringify({ name: slugify(project) + '-web', private: true, version: '0.1.0',
+    scripts: { dev: 'next dev -p 3001 -H 0.0.0.0', build: 'next build', start: 'next start -p 3001' },
+    dependencies: { next: '^14.2.15', react: '^18.3.1', 'react-dom': '^18.3.1' } }, null, 2) + '\n');
+  add('web/next.config.js', a.backend ? `// Forwards /api requests to your API so the browser only talks to one origin.
+// In Docker, API_ORIGIN is http://api:${a.port}. In production, set it to your API's public URL.
+module.exports = {
+  async rewrites() {
+    const origin = process.env.API_ORIGIN || 'http://localhost:${a.port}';
+    return [{ source: '/api/:path*', destination: origin + '/api/:path*' }];
+  },
+};
+` : `module.exports = {};
+`);
+  add('web/app/layout.js', `import './globals.css';
+
+export const metadata = { title: ${JSON.stringify(project)} };
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  );
+}
+`);
+  add('web/app/page.js', `'use client';
+import App from '../components/App';
+
+export default function Page() {
+  return <App wsUrl={process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:${a.port}/ws'} />;
+}
+`);
+  add('web/components/App.jsx', reactApp(a));
+  add('web/app/globals.css', REACT_CSS);
+}
+
+function buildPrompt(state) {
+  const a = analyze(state.selected);
+  const project = (state.name || 'My system').trim() || 'My system';
+  const scale = SCALES.find(s => s.id === state.scale) || SCALES[1];
+  const L = [];
+  L.push('# Build: ' + project, '');
+  L.push('I want your help building **' + project + '**' + (state.desc ? ': ' + state.desc.trim() : '.'), '');
+  L.push('Expected scale: **' + scale.name + '**. ' + scale.hint + ' Size every decision to this scale. Don’t add infrastructure this scale doesn’t need.', '');
+  L.push('## Components I’ve chosen', '');
+  LAYERS.forEach(layer => {
+    const ids = [...a.has].filter(id => PART[id].layer === layer.id);
+    if (!ids.length) return;
+    L.push('### ' + layer.name + ' (' + layer.hint.toLowerCase() + ')');
+    ids.forEach(id => L.push('- **' + PART[id].name + '**: ' + PART[id].desc + ' Likely hosting: ' + PART[id].host + '.'));
+    L.push('');
+  });
+  L.push('## What I need from you', '');
+  const steps = [];
+  steps.push('Restate the architecture in a few sentences and draw it as a Mermaid diagram showing how requests and data flow between the components.');
+  steps.push('Point out anything missing or unnecessary for this scale, and ask me any questions you need answered before writing code.');
+  if (a.backend) {
+    steps.push('Generate a complete starter project: ' + (a.frontend ? PART[a.frontend].name + ' front end, ' : '') + PART[a.backend].name + ' API' + (a.primary ? ', ' + PART[a.primary].name + ' as the primary database' : '') + ', and a `docker-compose.yml` that runs every stateful service locally' + (a.services.length ? ' (' + a.services.map(id => PART[id].name).join(', ') + ')' : '') + '.');
+    steps.push('Include a `/api/health` endpoint that checks each service, an `.env.example` with every setting, and one small end-to-end feature that proves data flows from the UI to the database and back.');
+    if (a.queue) steps.push('Include a background worker that consumes jobs from ' + PART[a.queue].name + ' and an endpoint that enqueues a job.');
+  } else {
+    steps.push('Generate a complete starter project for the ' + (a.frontend ? PART[a.frontend].name : 'site') + ' with a clear folder structure and one example page.');
+  }
+  steps.push('Show the full contents of every file with its path, then the exact commands to run it locally.');
+  steps.push('Write a README with a step-by-step path from local to hosted using the hosting options above, including how to set environment variables, run database migrations, and set up HTTPS and backups.');
+  const later = [...a.has].filter(id => !PART[id].run);
+  if (later.length) steps.push('For ' + later.map(id => PART[id].name).join(', ') + ': explain how to add each one, which provider you recommend at this scale, and what it costs to start.');
+  steps.forEach((s, i) => L.push((i + 1) + '. ' + s));
+  L.push('', '## Constraints', '', '- Keep secrets in environment variables, never in code.', '- Prefer boring, well-documented tools over new ones.', '- Explain any choice that a developer who knows the basics might not recognize.', '');
+  return L.join('\n');
+}
+// ===================== GEN-END =====================
+
+// ===================== UI =====================
+const STORE_KEY = 'stackdraft:v1';
+function loadState() {
+  try { const s = JSON.parse(localStorage.getItem(STORE_KEY)); if (s && Array.isArray(s.selected)) return s; } catch (e) {}
+  return null;
+}
+const state = loadState() || { name: 'Volunteer sign-ups', scale: 'small', desc: '', selected: ['react', 'express', 'postgres', 'email'] };
+state.selected = state.selected.filter(id => PART[id]);
+function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {} }
+
+const $ = (s, r = document) => r.querySelector(s);
+const el = (tag, attrs = {}, ...kids) => {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (v == null || v === false) continue;
+    if (k === 'class') n.className = v;
+    else if (k === 'style') n.setAttribute('style', v);
+    else if (k.startsWith('on')) n.addEventListener(k.slice(2), v);
+    else n.setAttribute(k, v === true ? '' : v);
+  }
+  kids.flat().forEach(c => { if (c != null && c !== false) n.append(c.nodeType ? c : document.createTextNode(String(c))); });
+  return n;
+};
+const layerColor = (id) => 'var(--l-' + id + ')';
+let lastToggled = null;
+
+function toggle(id) {
+  const i = state.selected.indexOf(id);
+  if (i >= 0) state.selected.splice(i, 1); else { state.selected.push(id); lastToggled = id; }
+  save(); renderBuild();
+}
+
+function renderMeta() {
+  $('#f-name').value = state.name;
+  $('#f-desc').value = state.desc;
+  const seg = $('#f-scale'); seg.replaceChildren();
+  SCALES.forEach(s => seg.append(el('button', { type: 'button', 'aria-pressed': String(state.scale === s.id), onclick: () => { state.scale = s.id; save(); renderMeta(); renderTitle(); } }, s.name)));
+  $('#scale-hint').textContent = (SCALES.find(s => s.id === state.scale) || SCALES[1]).hint;
+}
+
+function renderCatalog() {
+  const root = $('#catalog'); root.replaceChildren();
+  LAYERS.forEach(layer => {
+    const parts = PARTS.filter(p => p.layer === layer.id);
+    root.append(el('div', { class: 'layer-group', style: '--c:' + layerColor(layer.id) },
+      el('h3', {}, layer.name, el('span', {}, layer.hint)),
+      el('div', { class: 'parts' }, parts.map(p => el('button', {
+        type: 'button', class: 'part', 'aria-pressed': String(state.selected.includes(p.id)), onclick: () => toggle(p.id),
+      }, el('span', { class: 'box', 'aria-hidden': 'true' }), el('span', { class: 'part-name' }, p.name),
+        el('span', { class: 'badge' + (p.run ? ' runs' : '') }, p.run ? 'Runs locally' : 'Plan only'),
+        el('span', { class: 'part-desc' }, p.desc))))));
+  });
+}
+
+function renderDrawing() {
+  const a = analyze(state.selected);
+  const root = $('#drawing'); root.replaceChildren();
+  LAYERS.forEach(layer => {
+    const ids = [...a.has].filter(id => PART[id].layer === layer.id);
+    root.append(el('div', { class: 'lane', style: '--c:' + layerColor(layer.id) },
+      el('div', { class: 'lane-label' }, layer.name, el('small', {}, layer.hint)),
+      el('div', { class: 'chips' }, ids.length ? ids.map(id => {
+        const auto = a.added.includes(id);
+        return el('span', { class: 'chip' + (auto ? ' auto' : '') + (id === lastToggled ? ' fresh' : ''), title: auto ? 'Added automatically' : PART[id].desc },
+          PART[id].name,
+          auto ? null : el('button', { type: 'button', 'aria-label': 'Remove ' + PART[id].name, onclick: () => toggle(id) }, '×'));
+      }) : el('span', { class: 'empty-lane' }, 'Nothing here yet'))));
+  });
+  lastToggled = null;
+  renderTitle(a);
+  const notes = $('#notes'); notes.replaceChildren();
+  const runs = [...a.has].filter(id => PART[id].run).length;
+  notes.append(el('h3', {}, 'Notes on this design'));
+  const items = a.notes.map(n => el('li', { class: n.warn ? 'warn' : '' }, n.text));
+  if (!a.has.size) items.push(el('li', {}, 'Pick parts on the left, or open a reference system to start from something real.'));
+  else items.push(el('li', {}, runs + ' of ' + a.has.size + ' parts will run in the starter project. The rest are covered in the plan and the README.'));
+  notes.append(el('ul', {}, items));
+}
+
+function renderTitle(a) {
+  a = a || analyze(state.selected);
+  const scale = SCALES.find(s => s.id === state.scale) || SCALES[1];
+  const tb = $('#titleblock'); tb.replaceChildren();
+  const cell = (k, v) => el('div', {}, el('span', {}, k), el('strong', { title: v }, v));
+  tb.append(cell('Project', state.name || 'Untitled'), cell('Scale', scale.name), cell('Parts', String(a.has.size)),
+    cell('Drawn', new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })));
+}
+
+function renderBuild() { renderCatalog(); renderDrawing(); }
+
+// Examples
+let tier = 'all';
+let currentEx = 'reddit';
+const TIERS = [{ id: 'all', name: 'All' }, { id: 'large', name: 'Large' }, { id: 'medium', name: 'Medium' }, { id: 'small', name: 'Small and solo' }];
+function renderExamples() {
+  const tf = $('#tier-filter'); tf.replaceChildren();
+  TIERS.forEach(t => tf.append(el('button', { type: 'button', 'aria-pressed': String(tier === t.id), onclick: () => {
+    tier = t.id;
+    const first = EXAMPLES.find(e => tier === 'all' || e.tier === tier);
+    if (first && !(tier === 'all' || EXAMPLES.find(e => e.id === currentEx).tier === tier)) currentEx = first.id;
+    renderExamples();
+  } }, t.name)));
+  const list = $('#ex-list'); list.replaceChildren();
+  TIERS.slice(1).forEach(t => {
+    const exs = EXAMPLES.filter(e => e.tier === t.id && (tier === 'all' || tier === t.id));
+    if (!exs.length) return;
+    list.append(el('div', { class: 'ex-tier' }, t.name));
+    exs.forEach(e => list.append(el('button', { type: 'button', class: 'ex-item', 'aria-current': String(currentEx === e.id), onclick: () => { currentEx = e.id; renderExamples(); } },
+      el('strong', {}, e.name), el('span', {}, e.kind))));
+  });
+  const e = EXAMPLES.find(x => x.id === currentEx);
+  const d = $('#ex-detail'); d.replaceChildren();
+  d.append(el('h2', {}, e.name), el('p', { class: 'scale' }, e.kind + '. ' + e.scale + '.'));
+  const lanes = el('div', { class: 'ex-lanes' });
+  LAYERS.forEach(layer => {
+    const items = e.lanes[layer.id] || [];
+    lanes.append(el('div', { class: 'lane', style: '--c:' + layerColor(layer.id) },
+      el('div', { class: 'lane-label' }, layer.name),
+      items.length ? el('ul', {}, items.map(([n, note]) => el('li', {}, el('strong', {}, n), el('span', {}, ': ' + note))))
+        : el('span', { class: 'empty-lane' }, 'Not needed at this size')));
+  });
+  d.append(lanes);
+  d.append(el('div', { class: 'hosting' }, el('h3', {}, 'Where it runs'), el('p', { style: 'margin:0' }, e.hosting)));
+  d.append(el('p', {}, el('strong', {}, 'The takeaway: '), e.lesson));
+  if (e.tier === 'large') d.append(el('p', { class: 'source' }, 'Assembled from public engineering blogs and conference talks. Systems at this size change constantly, so treat this as a simplified, approximate picture rather than a current blueprint.'));
+  else d.append(el('p', { class: 'source' }, 'A representative composite of businesses this size, not a specific company.'));
+  d.append(el('div', { class: 'row-actions' },
+    el('button', { class: 'btn primary', type: 'button', onclick: () => openInBuilder(e) }, 'Open in the builder')));
+}
+function openInBuilder(e) {
+  state.selected = e.parts.filter(id => PART[id]);
+  state.name = e.tier === 'large' ? e.name + '-style ' + e.kind.toLowerCase() : e.name;
+  state.scale = e.tier === 'small' ? (e.id === 'portfolio' ? 'solo' : 'small') : e.tier;
+  state.desc = e.kind + '.';
+  save(); renderMeta(); renderBuild(); showView('build');
+}
+
+// Export
+let currentFile = 'README.md';
+let downloads = null;
+function renderExport() {
+  const root = $('#export-root'); root.replaceChildren();
+  if (!state.selected.length) {
+    root.append(el('div', { class: 'panel empty-state' }, el('h2', {}, 'Nothing to export yet'),
+      el('p', {}, 'Add a few parts in the builder, or start from a reference system.'),
+      el('div', { class: 'row-actions', style: 'justify-content:center' },
+        el('button', { class: 'btn primary', type: 'button', onclick: () => showView('build') }, 'Go to the builder'),
+        el('button', { class: 'btn', type: 'button', onclick: () => showView('examples') }, 'Browse reference systems'))));
+    return;
+  }
+  const prompt = buildPrompt(state);
+  const proj = buildProject(state);
+  const a = proj.a;
+  if (!proj.files.find(f => f.path === currentFile)) currentFile = 'README.md';
+
+  root.append(el('h2', { style: 'margin-top:24px' }, 'Export ' + (state.name || 'your system')),
+    el('p', { class: 'lede' }, 'Hand the design to an AI assistant, or download a project that runs on your machine today and explains how to get it online.'));
+
+  const promptStatus = el('p', { class: 'status', role: 'status' });
+  const promptPanel = el('div', { class: 'panel' },
+    el('h3', {}, 'Prompt for an AI assistant'),
+    el('p', { class: 'stackline', style: 'margin:0' }, 'Paste this into Claude, ChatGPT, or a local model. It describes every part, the scale, and what to produce.'),
+    el('pre', { class: 'code prompt', tabindex: '0' }, prompt),
+    el('div', { class: 'row-actions' },
+      el('button', { class: 'btn primary', type: 'button', onclick: () => copyText(prompt, promptStatus) }, 'Copy prompt'),
+      el('button', { class: 'btn', type: 'button', onclick: () => saveFile(proj.slug + '-prompt.md', prompt, promptStatus) }, 'Download as .md')),
+    promptStatus);
+
+  const stack = [a.frontend && PART[a.frontend].name, a.backend && PART[a.backend].name, a.primary && PART[a.primary].name].filter(Boolean).join(' + ') || 'Static site';
+  const projStatus = el('p', { class: 'status', role: 'status' });
+  const preview = el('pre', { class: 'code', tabindex: '0' });
+  const list = el('div', { class: 'filelist', role: 'list' });
+  const showFile = (p) => {
+    currentFile = p;
+    preview.textContent = proj.files.find(f => f.path === p).content;
+    list.querySelectorAll('button').forEach(b => b.setAttribute('aria-current', String(b.dataset.path === p)));
+  };
+  proj.files.forEach(f => list.append(el('button', { type: 'button', role: 'listitem', 'data-path': f.path, onclick: () => showFile(f.path) }, f.path)));
+  const runs = [...a.has].filter(id => PART[id].run);
+  const plan = [...a.has].filter(id => !PART[id].run);
+  const projPanel = el('div', { class: 'panel' },
+    el('h3', {}, 'Starter project'),
+    el('p', { class: 'stackline', style: 'margin:0' }, el('strong', {}, stack), a.backend ? ', with Docker Compose for every service.' : '.'),
+    el('ul', { class: 'included' },
+      el('li', {}, 'Runs locally: ' + runs.map(id => PART[id].name).join(', ')),
+      plan.length ? el('li', { class: 'muted' }, 'Covered in the README: ' + plan.map(id => PART[id].name).join(', ')) : null),
+    el('div', { class: 'files' }, list, preview),
+    el('div', { class: 'row-actions' },
+      el('button', { class: 'btn primary', type: 'button', onclick: () => downloadZip(proj, projStatus) }, 'Download ' + proj.slug + '.zip'),
+      el('button', { class: 'btn', type: 'button', onclick: () => copyText(preview.textContent, projStatus) }, 'Copy this file')),
+    projStatus);
+  root.append(el('div', { class: 'export' }, promptPanel, projPanel));
+  showFile(currentFile);
+}
+
+async function copyText(text, status) {
+  try { await navigator.clipboard.writeText(text); status.textContent = 'Copied to clipboard.'; }
+  catch (e) {
+    const ta = el('textarea', { style: 'position:fixed;opacity:0' }); ta.value = text; document.body.append(ta); ta.select();
+    let ok = false; try { ok = document.execCommand('copy'); } catch (err) {}
+    ta.remove();
+    status.textContent = ok ? 'Copied to clipboard.' : 'Copying is blocked here. Select the text and copy it manually.';
+  }
+}
+
+async function saveFile(filename, data, status) {
+  if (downloads) {
+    try { await downloads.save({ filename, data }); status.textContent = 'Saved ' + filename + '.'; }
+    catch (e) {
+      if (e && e.code === 'declined') status.textContent = 'Download canceled.';
+      else if (e && e.code === 'rate_limited') status.textContent = 'A download prompt is already open. Try again in a moment.';
+      else status.textContent = 'Download isn’t available here (' + ((e && e.code) || 'error') + '). Copy the files instead.';
+    }
+    return;
+  }
+  try {
+    const blob = data instanceof Blob ? data : new Blob([data], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = el('a', { href: url, download: filename }); document.body.append(link); link.click(); link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    status.textContent = 'Downloading ' + filename + '.';
+  } catch (e) { status.textContent = 'Download isn’t available here. Copy the files instead.'; }
+}
+
+async function downloadZip(proj, status) {
+  if (!window.JSZip) { status.textContent = 'The zip library didn’t load. Check your connection and reload.'; return; }
+  status.textContent = 'Building the zip…';
+  const zip = new JSZip();
+  const folder = zip.folder(proj.slug);
+  proj.files.forEach(f => folder.file(f.path, f.content));
+  const blob = await zip.generateAsync({ type: 'blob' });
+  await saveFile(proj.slug + '.zip', blob, status);
+}
+
+// Tabs
+function showView(v) {
+  document.querySelectorAll('nav.tabs button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.view === v)));
+  ['build', 'examples', 'export'].forEach(id => { $('#view-' + id).hidden = id !== v; });
+  if (v === 'export') renderExport();
+  if (v === 'examples') renderExamples();
+  window.scrollTo({ top: 0 });
+}
+document.querySelectorAll('nav.tabs button').forEach(b => b.addEventListener('click', () => showView(b.dataset.view)));
+document.querySelectorAll('[data-goto]').forEach(b => b.addEventListener('click', () => showView(b.dataset.goto)));
+$('#f-name').addEventListener('input', (e) => { state.name = e.target.value; save(); renderTitle(); });
+$('#f-desc').addEventListener('input', (e) => { state.desc = e.target.value; save(); });
+$('#clear').addEventListener('click', () => { state.selected = []; save(); renderBuild(); });
+
+renderMeta();
+renderBuild();
+renderExamples();
+(async () => {
+  try { if (window.claude && window.claude.use) downloads = await window.claude.use('downloads'); } catch (e) { downloads = null; }
+})();
+</script>
+</body>
+</html>
