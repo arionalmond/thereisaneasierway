@@ -35,6 +35,10 @@ theme = "chalk"
     pageRef = "/about"
     weight = 41
   [[menus.main]]
+    name = "Tools"
+    url = "/tools/"
+    weight = 42
+  [[menus.main]]
     name = "Stackdraft"
     url = "/stackdraft/"
     weight = 50

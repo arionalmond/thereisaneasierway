@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Easier Index: free tools and resources worth knowing</title>
+<meta name="description" content="A hand-picked, searchable index of free tools, courses and services for learning, teaching, building and self-hosting.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F2F4F3; --surface: #FFFFFF; --sunk: #E8ECEA; --ink: #1C2320; --muted: #5B6661; --line: #D3D9D6;
+  --link: #3346B0; --link-visited: #6A3FA8; --pick: #A86A12; --pick-bg: #FBF1DF; --focus: #3346B0;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", Verdana, sans-serif;
+  color-scheme: light;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121614; --surface: #1A1F1D; --sunk: #222826; --ink: #E4E9E6; --muted: #9AA59F; --line: #303835;
+    --link: #9AAAF5; --link-visited: #C3A6F0; --pick: #E9B35C; --pick-bg: #2E2616; --focus: #9AAAF5;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121614; --surface: #1A1F1D; --sunk: #222826; --ink: #E4E9E6; --muted: #9AA59F; --line: #303835;
+  --link: #9AAAF5; --link-visited: #C3A6F0; --pick: #E9B35C; --pick-bg: #2E2616; --focus: #9AAAF5;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: inherit; }
+html { scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 84px); scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.55; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--bg); }
+a { color: var(--link); }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 3px; }
+.skip { position: absolute; left: -999px; top: 8px; background: var(--ink); color: var(--bg); padding: 8px 12px; z-index: 50; }
+.skip:focus { left: 8px; }
+
+.layout { max-width: 1180px; margin: 0 auto; padding: 0 20px; display: grid; grid-template-columns: 230px 1fr; gap: 40px; }
+
+/* Sidebar */
+aside { position: sticky; top: env(safe-area-inset-top, 0px); align-self: start; height: 100vh; height: 100dvh; overflow: auto; padding: 28px 0 40px; }
+.home { font-size: .9rem; color: var(--muted); text-decoration: none; }
+.home:hover { color: var(--ink); text-decoration: underline; }
+.brand { font-family: var(--display); font-weight: 800; font-size: 1.55rem; line-height: 1; margin: 14px 0 22px; letter-spacing: -.02em; }
+.brand a { color: inherit; text-decoration: none; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
+nav.toc a { display: flex; justify-content: space-between; gap: 8px; padding: 6px 10px; border-radius: 6px; color: var(--muted); text-decoration: none; font-size: .95rem; }
+nav.toc a:hover { color: var(--ink); background: var(--sunk); }
+nav.toc a[aria-current="true"] { color: var(--ink); background: var(--sunk); font-weight: 700; }
+nav.toc .n { font-variant-numeric: tabular-nums; font-size: .82rem; opacity: .8; }
+nav.toc a.dim { opacity: .4; }
+
+/* Main */
+main { padding: 28px 0 80px; min-width: 0; }
+.intro h1 { font-family: var(--display); font-weight: 800; font-size: clamp(2.3rem, 5.5vw, 3.8rem); line-height: .98; letter-spacing: -.03em; margin: 26px 0 14px; max-width: 16ch; }
+.intro p { color: var(--muted); max-width: 62ch; margin: 0 0 8px; font-size: 1.05rem; }
+.intro p strong { color: var(--ink); }
+.pick-mark { color: var(--pick); }
+
+.searchbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--bg); padding: 18px 0 12px; margin-top: 18px; border-bottom: 1px solid var(--line); }
+.search { position: relative; }
+.search input {
+  width: 100%; font: inherit; font-size: 1.08rem; padding: 13px 90px 13px 16px; border-radius: 10px;
+  border: 1.5px solid var(--line); background: var(--surface); color: var(--ink);
+}
+.search input:focus { border-color: var(--focus); outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 25%, transparent); }
+.search kbd, .search .clear { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); }
+.search kbd { font-family: var(--body); font-size: .8rem; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 1px 7px; background: var(--sunk); }
+.search .clear { border: 0; background: var(--sunk); color: var(--ink); border-radius: 6px; padding: 4px 10px; cursor: pointer; font: inherit; font-size: .85rem; }
+.filters { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; align-items: center; }
+.filters button {
+  font: inherit; font-size: .88rem; border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+  border-radius: 99px; padding: 4px 12px; cursor: pointer;
+}
+.filters button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.filters button.pick-filter[aria-pressed="true"] { background: var(--pick); border-color: var(--pick); color: var(--surface); }
+.count { color: var(--muted); font-size: .88rem; margin-left: auto; }
+
+section.cat { padding-top: 34px; }
+section.cat > h2 { font-family: var(--display); font-weight: 750; font-size: 1.7rem; letter-spacing: -.015em; margin: 0 0 4px; line-height: 1.15; }
+section.cat > h2 a { color: inherit; text-decoration: none; }
+section.cat > h2 a:hover::after { content: " #"; color: var(--muted); }
+section.cat > p { color: var(--muted); margin: 0 0 14px; max-width: 66ch; }
+h3.sub { font-family: var(--display); font-weight: 650; font-size: 1.05rem; margin: 18px 0 6px; }
+
+ul.links { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+ul.links li { display: grid; grid-template-columns: 22px 1fr; gap: 0 6px; padding: 10px 4px; border-bottom: 1px solid var(--line); }
+ul.links li.pick { background: var(--pick-bg); }
+.star { color: var(--pick); font-size: 1rem; line-height: 1.55; text-align: center; }
+.entry { min-width: 0; }
+.entry a.name { font-weight: 700; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.entry a.name:visited { color: var(--link-visited); }
+.entry .domain { color: var(--muted); font-size: .82rem; margin-left: 6px; overflow-wrap: anywhere; }
+.entry .desc { display: block; color: var(--ink); font-size: .96rem; }
+.tags { display: inline-flex; flex-wrap: wrap; gap: 4px; margin-left: 4px; vertical-align: 1px; }
+.tag { font-size: .72rem; border: 1px solid var(--line); color: var(--muted); border-radius: 4px; padding: 0 5px; white-space: nowrap; }
+mark { background: color-mix(in srgb, var(--pick) 30%, transparent); color: inherit; border-radius: 2px; }
+
+.empty { padding: 40px 0; color: var(--muted); }
+.empty button { font: inherit; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 6px; padding: 6px 12px; cursor: pointer; margin-top: 8px; }
+footer { margin-top: 60px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: .9rem; }
+footer p { margin: 4px 0; }
+
+@media (max-width: 860px) {
+  .layout { grid-template-columns: 1fr; gap: 0; }
+  aside { position: static; height: auto; overflow: visible; padding: 20px 0 0; }
+  .brand { margin-bottom: 0; }
+  nav.toc { display: none; }
+  .mobile-toc { display: block; }
+}
+.mobile-toc { display: none; margin-top: 10px; }
+.mobile-toc select { width: 100%; font: inherit; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+@media (max-width: 860px) { .mobile-toc { display: block; } }
+</style>
+</head>
+<body>
+<a class="skip" href="#content">Skip to the list</a>
+<div class="layout">
+  <aside>
+    <a class="home" href="/">← thereisaneasierway.com</a>
+    <div class="brand"><a href="#top">The Easier Index</a></div>
+    <nav class="toc" aria-label="Categories"><ol id="toc"></ol></nav>
+  </aside>
+
+  <main id="top">
+    <div class="intro">
+      <h1>Free tools worth knowing about.</h1>
+      <p>A hand-picked index of free courses, apps and services for learning to code, teaching computer science, building websites, running AI locally and keeping your digital life in order.</p>
+      <p>New here? Turn on <strong><span class="pick-mark">★</span> Top picks</strong> and start with those.</p>
+    </div>
+
+    <div class="searchbar">
+      <div class="search">
+        <label for="q" class="skip">Search the index</label>
+        <input id="q" type="search" autocomplete="off" spellcheck="false">
+        <kbd id="kbd" aria-hidden="true">/</kbd>
+        <button class="clear" id="clear" type="button" hidden>Clear</button>
+      </div>
+      <div class="filters" id="filters"></div>
+      <div class="mobile-toc"><select id="jump" aria-label="Jump to a category"></select></div>
+    </div>
+
+    <div id="content"></div>
+
+    <footer>
+      <p>Everything listed is free to use, or has a genuinely useful free plan (marked “Free plan”). Prices and plans change, so check before you rely on one.</p>
+      <p id="updated"></p>
+    </footer>
+  </main>
+</div>
+
+<script>
+/* =====================================================================
+   EDIT THE LIST HERE
+   Each category: { id, name, blurb, links: [...] }
+   Each link: [name, url, description, tags, isTopPick]
+   Tags: oss = open source, self = self-hostable, web = runs in the browser,
+         plan = free plan of a paid product, win / mac / linux = platforms,
+         edu = free for students and teachers
+   Optional: put { sub: "Heading" } between links to start a subsection.
+   ===================================================================== */
+const UPDATED = '2026-10-17';
+
+const CATEGORIES = [
+  { id: 'learn-to-code', name: 'Learn to code', blurb: 'Full curricula and references for going from zero to building real things.', links: [
+    ['CS50', 'https://cs50.harvard.edu/', 'Harvard’s intro to computer science. Free lectures, problem sets and an online IDE.', ['web', 'edu'], true],
+    ['The Odin Project', 'https://www.theodinproject.com/', 'Project-based path through full-stack web development.', ['oss', 'web'], true],
+    ['freeCodeCamp', 'https://www.freecodecamp.org/', 'Interactive lessons and certifications from HTML to Python and data analysis.', ['oss', 'web'], false],
+    ['MDN Web Docs', 'https://developer.mozilla.org/', 'The reference for HTML, CSS and JavaScript, with beginner guides.', ['web'], true],
+    ['JavaScript.info', 'https://javascript.info/', 'A thorough, readable modern JavaScript tutorial.', ['web'], false],
+    ['Automate the Boring Stuff', 'https://automatetheboringstuff.com/', 'Practical Python for everyday tasks. Full book free online.', ['web'], false],
+    ['Exercism', 'https://exercism.org/', 'Coding exercises in 70+ languages with optional human mentoring.', ['oss', 'web'], false],
+    ['roadmap.sh', 'https://roadmap.sh/', 'Visual learning paths for frontend, backend, DevOps and more.', ['oss', 'web'], false],
+    ['The Missing Semester', 'https://missing.csail.mit.edu/', 'MIT’s course on the shell, Git, editors and other tools classes skip.', ['web'], true],
+    ['Teach Yourself CS', 'https://teachyourselfcs.com/', 'An opinionated self-study plan for a CS degree’s worth of fundamentals.', ['web'], false],
+  ]},
+  { id: 'teaching-cs', name: 'Teaching computer science', blurb: 'Curricula, communities and classroom tools for K–12 CS teachers.', links: [
+    ['Code.org', 'https://code.org/', 'Free K–12 CS curricula, including CS Principles and App Lab.', ['web', 'edu'], true],
+    ['CSTA', 'https://csteachers.org/', 'The Computer Science Teachers Association: standards, chapters and PD.', ['edu'], true],
+    ['AP CSP on AP Central', 'https://apcentral.collegeboard.org/courses/ap-computer-science-principles', 'Course framework, Create performance task guidelines and scoring.', ['web', 'edu'], false],
+    ['Python Tutor', 'https://pythontutor.com/', 'Step through code and watch variables and memory change. Great for projecting.', ['web'], true],
+    ['Scratch', 'https://scratch.mit.edu/', 'Block-based programming from MIT, with a huge shared project library.', ['web', 'edu'], false],
+    ['CS Unplugged', 'https://www.csunplugged.org/', 'Teach CS ideas with cards, string and games. No computers needed.', ['oss', 'edu'], false],
+    ['GitHub Education', 'https://education.github.com/', 'Free GitHub Pro, Copilot and developer tools for verified students and teachers.', ['edu'], false],
+    ['GitHub Classroom', 'https://classroom.github.com/', 'Hand out starter repos and collect assignments through GitHub.', ['web', 'edu'], false],
+    ['Blockly', 'https://developers.google.com/blockly', 'Google’s library for building your own block-based coding activities.', ['oss'], false],
+  ]},
+  { id: 'dev-tools', name: 'Developer tools', blurb: 'Editors, references and small utilities that save time every day.', links: [
+    ['Visual Studio Code', 'https://code.visualstudio.com/', 'The default code editor for most developers, with a vast extension library.', ['oss', 'win', 'mac', 'linux'], true],
+    ['Git', 'https://git-scm.com/', 'Version control, plus the free Pro Git book.', ['oss', 'win', 'mac', 'linux'], true],
+    ['DevDocs', 'https://devdocs.io/', 'Searchable documentation for hundreds of languages and libraries, offline too.', ['oss', 'web'], false],
+    ['regex101', 'https://regex101.com/', 'Build and test regular expressions with a plain-English explanation.', ['web'], true],
+    ['explainshell', 'https://explainshell.com/', 'Paste a shell command and see what every flag does.', ['oss', 'web'], false],
+    ['crontab.guru', 'https://crontab.guru/', 'Translate cron schedules into plain English.', ['web'], false],
+    ['Can I use', 'https://caniuse.com/', 'Which browsers support which web features.', ['web'], false],
+    ['Hoppscotch', 'https://hoppscotch.io/', 'Test REST, GraphQL and WebSocket APIs in the browser.', ['oss', 'web', 'self'], false],
+    ['CyberChef', 'https://gchq.github.io/CyberChef/', 'Encode, decode, hash and transform data with drag-and-drop recipes.', ['oss', 'web'], false],
+    ['Excalidraw', 'https://excalidraw.com/', 'Hand-drawn style diagrams and whiteboarding.', ['oss', 'web'], false],
+    ['diagrams.net', 'https://app.diagrams.net/', 'Flowcharts, network and architecture diagrams (formerly draw.io).', ['oss', 'web'], false],
+  ]},
+  { id: 'websites', name: 'Websites and hosting', blurb: 'Build a site and get it online without paying for a server.', links: [
+    { sub: 'Build' },
+    ['Hugo', 'https://gohugo.io/', 'Very fast static site generator. This site runs on it.', ['oss', 'win', 'mac', 'linux'], true],
+    ['Astro', 'https://astro.build/', 'Content-focused site framework that ships little JavaScript.', ['oss'], false],
+    ['Eleventy', 'https://www.11ty.dev/', 'A simple, flexible static site generator in JavaScript.', ['oss'], false],
+    { sub: 'Host' },
+    ['Cloudflare Pages', 'https://pages.cloudflare.com/', 'Static hosting on a global CDN with a generous free plan.', ['plan'], true],
+    ['GitHub Pages', 'https://pages.github.com/', 'Free hosting straight from a GitHub repository.', ['edu'], false],
+    ['Netlify', 'https://www.netlify.com/', 'Static hosting with forms and previews for every branch.', ['plan'], false],
+    ['Vercel', 'https://vercel.com/', 'Hosting built for Next.js and other front-end frameworks.', ['plan'], false],
+    ['Let’s Encrypt', 'https://letsencrypt.org/', 'Free HTTPS certificates. Most hosts use it automatically.', ['oss'], false],
+    { sub: 'Measure' },
+    ['Umami', 'https://umami.is/', 'Simple, privacy-friendly analytics you can host yourself.', ['oss', 'self', 'plan'], false],
+  ]},
+  { id: 'local-ai', name: 'AI you can run yourself', blurb: 'Run language models on your own computer, and learn how they work.', links: [
+    { sub: 'Run models' },
+    ['Ollama', 'https://ollama.com/', 'Download and run open models with one command; includes a local API.', ['oss', 'win', 'mac', 'linux'], true],
+    ['LM Studio', 'https://lmstudio.ai/', 'Desktop app to find, download and chat with local models.', ['win', 'mac', 'linux'], true],
+    ['llama.cpp', 'https://github.com/ggml-org/llama.cpp', 'The engine under many local AI tools. Runs models on CPU or GPU.', ['oss'], false],
+    ['Open WebUI', 'https://openwebui.com/', 'A ChatGPT-style web interface for Ollama and other local backends.', ['oss', 'self'], false],
+    ['Jan', 'https://jan.ai/', 'Open-source desktop chat app that runs models offline.', ['oss', 'win', 'mac', 'linux'], false],
+    ['Hugging Face', 'https://huggingface.co/', 'Where open models and datasets are published.', ['web', 'plan'], false],
+    { sub: 'Understand them' },
+    ['Neural Networks Zero to Hero', 'https://karpathy.ai/zero-to-hero.html', 'Andrej Karpathy builds neural nets and a GPT from scratch, on video.', ['web'], true],
+    ['3Blue1Brown: Neural networks', 'https://www.3blue1brown.com/topics/neural-networks', 'Visual explanations of how networks learn, through transformers.', ['web'], true],
+    ['nanoGPT', 'https://github.com/karpathy/nanoGPT', 'The simplest repository for training a small GPT yourself.', ['oss'], false],
+    ['Hugging Face Learn', 'https://huggingface.co/learn', 'Free courses on LLMs, fine-tuning and agents.', ['web'], false],
+  ]},
+  { id: 'self-hosting', name: 'Self-hosting and homelab', blurb: 'Run your own services at home or on a cheap server.', links: [
+    ['awesome-selfhosted', 'https://awesome-selfhosted.net/', 'The big list of software you can host yourself, by category.', ['oss', 'web'], true],
+    ['Docker docs', 'https://docs.docker.com/', 'Containers are how most self-hosted apps are installed.', ['oss'], true],
+    ['Tailscale', 'https://tailscale.com/', 'Reach your home devices from anywhere without opening ports.', ['plan', 'win', 'mac', 'linux'], true],
+    ['Proxmox VE', 'https://www.proxmox.com/', 'Turn a spare PC into a host for virtual machines and containers.', ['oss', 'self'], false],
+    ['Pi-hole', 'https://pi-hole.net/', 'Network-wide ad and tracker blocking on a Raspberry Pi or container.', ['oss', 'self'], false],
+    ['Uptime Kuma', 'https://github.com/louislam/uptime-kuma', 'A friendly dashboard that alerts you when your sites go down.', ['oss', 'self'], false],
+    ['Nextcloud', 'https://nextcloud.com/', 'Your own file sync, calendar and contacts.', ['oss', 'self'], false],
+    ['Jellyfin', 'https://jellyfin.org/', 'Stream the movies and music you already own to any device.', ['oss', 'self'], false],
+  ]},
+  { id: 'productivity', name: 'Office and productivity', blurb: 'Free replacements for paid software, and utilities that make computers nicer.', links: [
+    ['LibreOffice', 'https://www.libreoffice.org/', 'Full office suite that opens Word, Excel and PowerPoint files.', ['oss', 'win', 'mac', 'linux'], true],
+    ['Obsidian', 'https://obsidian.md/', 'Notes as plain Markdown files on your own computer.', ['win', 'mac', 'linux'], true],
+    ['Joplin', 'https://joplinapp.org/', 'Open-source notes with sync and end-to-end encryption.', ['oss', 'win', 'mac', 'linux'], false],
+    ['Zotero', 'https://www.zotero.org/', 'Collect, organize and cite research sources.', ['oss', 'win', 'mac', 'linux'], false],
+    ['Stirling-PDF', 'https://github.com/Stirling-Tools/Stirling-PDF', 'Merge, split, convert and OCR PDFs on your own machine.', ['oss', 'self'], false],
+    ['7-Zip', 'https://www.7-zip.org/', 'Open and create almost any archive format.', ['oss', 'win'], false],
+    ['PowerToys', 'https://learn.microsoft.com/en-us/windows/powertoys/', 'Microsoft’s power-user add-ons for Windows: window layouts, color picker, text grabber.', ['oss', 'win'], true],
+    ['Everything', 'https://www.voidtools.com/', 'Instant file search for Windows.', ['win'], false],
+    ['ShareX', 'https://getsharex.com/', 'Screenshots, screen recording and annotation for Windows.', ['oss', 'win'], false],
+  ]},
+  { id: 'creative', name: 'Design, audio and video', blurb: 'Professional-grade creative software that costs nothing.', links: [
+    ['Blender', 'https://www.blender.org/', '3D modeling, animation, rendering and video editing.', ['oss', 'win', 'mac', 'linux'], true],
+    ['Krita', 'https://krita.org/', 'Digital painting and illustration.', ['oss', 'win', 'mac', 'linux'], false],
+    ['GIMP', 'https://www.gimp.org/', 'Photo editing and image manipulation.', ['oss', 'win', 'mac', 'linux'], false],
+    ['Inkscape', 'https://inkscape.org/', 'Vector graphics for logos, icons and diagrams.', ['oss', 'win', 'mac', 'linux'], false],
+    ['Photopea', 'https://www.photopea.com/', 'A Photoshop-like editor that runs in the browser and opens PSD files.', ['web'], true],
+    ['OBS Studio', 'https://obsproject.com/', 'Record lessons or stream your screen, camera and audio.', ['oss', 'win', 'mac', 'linux'], true],
+    ['DaVinci Resolve', 'https://www.blackmagicdesign.com/products/davinciresolve', 'Hollywood-grade video editing; the free version is enough for most people.', ['win', 'mac', 'linux'], false],
+    ['Kdenlive', 'https://kdenlive.org/', 'Approachable open-source video editor.', ['oss', 'win', 'mac', 'linux'], false],
+    ['Audacity', 'https://www.audacityteam.org/', 'Record and edit audio.', ['oss', 'win', 'mac', 'linux'], false],
+    ['Google Fonts', 'https://fonts.google.com/', 'Hundreds of free fonts for print and the web.', ['oss', 'web'], false],
+    ['Unsplash', 'https://unsplash.com/', 'High-quality photos free to use.', ['web'], false],
+    ['Coolors', 'https://coolors.co/', 'Generate and explore color palettes.', ['web', 'plan'], false],
+  ]},
+  { id: 'reading', name: 'Books, courses and research', blurb: 'Legally free books, textbooks and university courses.', links: [
+    ['Libby', 'https://libbyapp.com/', 'Borrow ebooks and audiobooks with your public library card.', ['web'], true],
+    ['OpenStax', 'https://openstax.org/', 'Peer-reviewed college and high school textbooks, free online.', ['web', 'edu'], true],
+    ['MIT OpenCourseWare', 'https://ocw.mit.edu/', 'Materials from thousands of MIT courses.', ['web', 'edu'], true],
+    ['Khan Academy', 'https://www.khanacademy.org/', 'Lessons and practice across math, science, computing and more.', ['web', 'edu'], false],
+    ['Project Gutenberg', 'https://www.gutenberg.org/', '70,000+ public-domain ebooks.', ['web'], false],
+    ['Standard Ebooks', 'https://standardebooks.org/', 'Carefully formatted public-domain classics.', ['oss', 'web'], false],
+    ['Internet Archive', 'https://archive.org/', 'Archived websites, books, audio and software.', ['web'], false],
+    ['Open Textbook Library', 'https://open.umn.edu/opentextbooks', 'Openly licensed textbooks you can adapt for your own course.', ['web', 'edu'], false],
+    ['arXiv', 'https://arxiv.org/', 'Free preprints of research in CS, math and physics.', ['web'], false],
+  ]},
+  { id: 'watch', name: 'Free and legal streaming', blurb: 'Movies and TV that are free with ads or with a library card.', links: [
+    ['Kanopy', 'https://www.kanopy.com/', 'Films and documentaries through your library or school.', ['web'], true],
+    ['Hoopla', 'https://www.hoopladigital.com/', 'Movies, TV, music and comics with a library card.', ['web'], false],
+    ['PBS', 'https://www.pbs.org/', 'Documentaries, NOVA and more, free to stream.', ['web'], true],
+    ['Tubi', 'https://tubitv.com/', 'Large ad-supported movie and TV library.', ['web'], false],
+    ['Pluto TV', 'https://pluto.tv/', 'Live channels and on-demand shows, ad-supported.', ['web'], false],
+    ['Plex', 'https://watch.plex.tv/', 'Free ad-supported movies and live TV, plus a media server for your own files.', ['web', 'plan'], false],
+  ]},
+  { id: 'money', name: 'Money and taxes', blurb: 'File, budget and check your credit without paying for it.', links: [
+    ['IRS Free File', 'https://www.irs.gov/freefile', 'Free federal tax filing for eligible incomes through IRS partners.', ['web'], true],
+    ['Free tax help (VITA and TCE)', 'https://www.irs.gov/individuals/free-tax-return-preparation-for-qualifying-taxpayers', 'IRS-certified volunteers prepare returns for free for qualifying taxpayers.', [], true],
+    ['IRS Link & Learn Taxes', 'https://apps.irs.gov/app/vita/', 'The free training and certification used by VITA volunteers.', ['web'], false],
+    ['AnnualCreditReport.com', 'https://www.annualcreditreport.com/', 'The official site for free credit reports from all three bureaus.', ['web'], true],
+    ['Investor.gov compound interest calculator', 'https://www.investor.gov/financial-tools-calculators/calculators/compound-interest-calculator', 'See how savings grow over time. Useful for teaching too.', ['web'], false],
+    ['Actual Budget', 'https://actualbudget.org/', 'Envelope-style budgeting app you can host yourself.', ['oss', 'self'], false],
+    ['GnuCash', 'https://www.gnucash.org/', 'Double-entry accounting for personal and small business finances.', ['oss', 'win', 'mac', 'linux'], false],
+    ['Firefly III', 'https://www.firefly-iii.org/', 'Self-hosted personal finance manager.', ['oss', 'self'], false],
+  ]},
+  { id: 'privacy', name: 'Privacy and security', blurb: 'Simple changes that protect your accounts and your browsing.', links: [
+    ['Bitwarden', 'https://bitwarden.com/', 'Password manager with a fully featured free plan.', ['oss', 'plan', 'win', 'mac', 'linux'], true],
+    ['uBlock Origin', 'https://ublockorigin.com/', 'Efficient ad and tracker blocker for your browser.', ['oss'], true],
+    ['Have I Been Pwned', 'https://haveibeenpwned.com/', 'Check whether your email has shown up in a data breach.', ['web'], true],
+    ['Privacy Guides', 'https://www.privacyguides.org/', 'Independent, well-researched privacy tool recommendations.', ['oss', 'web'], false],
+    ['Firefox', 'https://www.mozilla.org/firefox/', 'Independent browser with strong tracking protection.', ['oss', 'win', 'mac', 'linux'], false],
+    ['Signal', 'https://signal.org/', 'End-to-end encrypted messaging and calls.', ['oss'], false],
+    ['Proton Mail', 'https://proton.me/mail', 'Encrypted email with a free plan.', ['plan', 'web'], false],
+    ['KeePassXC', 'https://keepassxc.org/', 'Offline password manager that keeps your vault in a local file.', ['oss', 'win', 'mac', 'linux'], false],
+    ['VirusTotal', 'https://www.virustotal.com/', 'Scan a file or link with dozens of antivirus engines.', ['web'], false],
+  ]},
+];
+
+const TAGS = { oss: 'Open source', self: 'Self-hostable', web: 'In browser', plan: 'Free plan', win: 'Windows', mac: 'Mac', linux: 'Linux', edu: 'Education' };
+const FILTERS = [
+  { id: 'pick', label: '★ Top picks', test: (l) => l.pick, cls: 'pick-filter' },
+  { id: 'oss', label: 'Open source', test: (l) => l.tags.includes('oss') },
+  { id: 'self', label: 'Self-hostable', test: (l) => l.tags.includes('self') },
+  { id: 'web', label: 'In browser', test: (l) => l.tags.includes('web') },
+  { id: 'edu', label: 'Education', test: (l) => l.tags.includes('edu') },
+];
+
+/* ===================================================================== */
+const $ = (s) => document.querySelector(s);
+const el = (tag, attrs, ...kids) => {
+  const n = document.createElement(tag);
+  if (attrs) for (const [k, v] of Object.entries(attrs)) {
+    if (v == null || v === false) continue;
+    if (k === 'class') n.className = v; else if (k.startsWith('on')) n.addEventListener(k.slice(2), v); else n.setAttribute(k, v);
+  }
+  kids.flat().forEach(c => { if (c != null && c !== false) n.append(c.nodeType ? c : document.createTextNode(String(c))); });
+  return n;
+};
+
+// Normalize data
+const cats = CATEGORIES.map(c => {
+  let sub = null;
+  const links = [];
+  c.links.forEach(item => {
+    if (!Array.isArray(item)) { sub = item.sub; return; }
+    const [name, url, desc, tags = [], pick = false] = item;
+    let domain = '';
+    try { domain = new URL(url).hostname.replace(/^www\./, ''); } catch (e) {}
+    links.push({ name, url, desc, tags, pick, sub, domain, hay: (name + ' ' + desc + ' ' + domain + ' ' + tags.map(t => TAGS[t] || t).join(' ') + ' ' + c.name + ' ' + (sub || '')).toLowerCase() });
+  });
+  return { ...c, links };
+});
+const total = cats.reduce((n, c) => n + c.links.length, 0);
+$('#q').placeholder = 'Search ' + total + ' free resources';
+$('#updated').textContent = 'Last updated ' + new Date(UPDATED + 'T12:00:00').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) + '.';
+
+const active = new Set();
+let query = '';
+
+function highlight(text, terms) {
+  if (!terms.length) return [text];
+  const re = new RegExp('(' + terms.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')', 'ig');
+  return text.split(re).map((part, i) => i % 2 ? el('mark', null, part) : part);
+}
+
+function render() {
+  const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+  const tests = FILTERS.filter(f => active.has(f.id)).map(f => f.test);
+  const content = $('#content'); content.replaceChildren();
+  const toc = $('#toc'); toc.replaceChildren();
+  const jump = $('#jump'); jump.replaceChildren(el('option', { value: '' }, 'Jump to a category…'));
+  let shown = 0;
+
+  cats.forEach(c => {
+    const matches = c.links.filter(l => terms.every(t => l.hay.includes(t)) && tests.every(t => t(l)));
+    shown += matches.length;
+    toc.append(el('li', null, el('a', { href: '#' + c.id, class: matches.length ? null : 'dim', 'data-id': c.id }, el('span', null, c.name), el('span', { class: 'n' }, String(matches.length)))));
+    if (matches.length) jump.append(el('option', { value: c.id }, c.name + ' (' + matches.length + ')'));
+    if (!matches.length) return;
+
+    const section = el('section', { class: 'cat', id: c.id, 'aria-labelledby': c.id + '-h' },
+      el('h2', { id: c.id + '-h' }, el('a', { href: '#' + c.id }, c.name)),
+      el('p', null, c.blurb));
+    let list = null, lastSub;
+    matches.forEach(l => {
+      if (!list || l.sub !== lastSub) {
+        if (l.sub) section.append(el('h3', { class: 'sub' }, l.sub));
+        list = el('ul', { class: 'links' });
+        section.append(list);
+        lastSub = l.sub;
+      }
+      list.append(el('li', { class: l.pick ? 'pick' : null },
+        el('span', { class: 'star', 'aria-label': l.pick ? 'Top pick' : null, title: l.pick ? 'Top pick' : null }, l.pick ? '★' : ''),
+        el('div', { class: 'entry' },
+          el('a', { class: 'name', href: l.url, target: '_blank', rel: 'noopener' }, highlight(l.name, terms)),
+          el('span', { class: 'domain' }, l.domain),
+          l.tags.length ? el('span', { class: 'tags' }, l.tags.map(t => el('span', { class: 'tag' }, TAGS[t] || t))) : null,
+          el('span', { class: 'desc' }, highlight(l.desc, terms)))));
+    });
+    content.append(section);
+  });
+
+  const filtered = terms.length || active.size;
+  $('#count').textContent = filtered ? shown + ' of ' + total : total + ' resources';
+  if (!shown) {
+    content.append(el('div', { class: 'empty' },
+      el('p', null, 'Nothing matches “' + (query || 'those filters') + '”. Try a broader word, or clear the filters.'),
+      el('button', { type: 'button', onclick: reset }, 'Clear search and filters')));
+  }
+  $('#clear').hidden = !query;
+  $('#kbd').hidden = !!query;
+  observe();
+}
+
+function reset() { query = ''; $('#q').value = ''; active.clear(); renderFilters(); render(); $('#q').focus(); }
+
+function renderFilters() {
+  const f = $('#filters'); f.replaceChildren();
+  FILTERS.forEach(x => f.append(el('button', { type: 'button', class: x.cls || null, 'aria-pressed': String(active.has(x.id)), onclick: () => {
+    active.has(x.id) ? active.delete(x.id) : active.add(x.id);
+    renderFilters(); render();
+  } }, x.label)));
+  f.append(el('span', { class: 'count', id: 'count', 'aria-live': 'polite' }));
+}
+
+// Highlight the current category in the sidebar
+let io;
+function observe() {
+  if (io) io.disconnect();
+  if (!('IntersectionObserver' in window)) return;
+  io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      document.querySelectorAll('#toc a').forEach(a => a.setAttribute('aria-current', String(a.dataset.id === e.target.id)));
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+  document.querySelectorAll('section.cat').forEach(s => io.observe(s));
+}
+
+let t;
+$('#q').addEventListener('input', (e) => { clearTimeout(t); t = setTimeout(() => { query = e.target.value.trim(); render(); }, 80); });
+$('#clear').addEventListener('click', () => { query = ''; $('#q').value = ''; render(); $('#q').focus(); });
+$('#jump').addEventListener('change', (e) => { if (e.target.value) { location.hash = e.target.value; e.target.value = ''; } });
+document.addEventListener('keydown', (e) => {
+  const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
+  if (e.key === '/' && !typing) { e.preventDefault(); $('#q').focus(); }
+  if (e.key === 'Escape' && document.activeElement === $('#q')) { query = ''; $('#q').value = ''; render(); }
+});
+
+renderFilters();
+render();
+if (location.hash) { const target = document.getElementById(location.hash.slice(1)); if (target) target.scrollIntoView(); }
+</script>
+</body>
+</html>
