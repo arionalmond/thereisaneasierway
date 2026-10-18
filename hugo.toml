@@ -34,14 +34,20 @@ theme = "chalk"
     name = "About"
     pageRef = "/about"
     weight = 41
-  [[menus.main]]
+
+  # Standalone apps served from static/ — shown apart from the blog sections
+  [[menus.apps]]
+    name = "CS1"
+    url = "/cs1/"
+    weight = 10
+  [[menus.apps]]
     name = "Tools"
     url = "/tools/"
-    weight = 42
-  [[menus.main]]
+    weight = 20
+  [[menus.apps]]
     name = "Stackdraft"
     url = "/stackdraft/"
-    weight = 50
+    weight = 30
 
 [markup]
   [markup.highlight]

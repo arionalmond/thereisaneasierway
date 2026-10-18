@@ -1,0 +1,1092 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Computer Science I Study Guide</title>
+<meta name="description" content="Plain-language explanations, worked examples, practice questions and a glossary for Computer Science Principles: digital information, the Internet, app design, programming basics and the PBM (performance-based measurement) project for NC Computer Science I (CS20).">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Recursive:wght,CASL,MONO@300..900,0..1,0..1&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F7F8FA; --surface: #FFFFFF; --sunk: #EDF0F4; --ink: #1D2130; --muted: #5A6072; --line: #D5DAE2;
+  --link: #2B55C4; --good: #1E7A45; --good-bg: #E3F3E9; --bad: #B0303A; --bad-bg: #FBE7E8;
+  --u0: #4A5568; --u1: #2C62D6; --u2: #0B8076; --u3: #8A47C8; --u4: #C02F72; --u8: #A86A0E;
+  --code-bg: #F1F3F7; --shadow: rgb(29 33 48 / .14);
+  --head: "Recursive", "Segoe UI", system-ui, sans-serif;
+  --mono: "Recursive", ui-monospace, Menlo, Consolas, monospace;
+  --body: "Source Serif 4", Georgia, "Times New Roman", serif;
+  color-scheme: light; box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #13151C; --surface: #1B1E27; --sunk: #232733; --ink: #E6E8EF; --muted: #A0A6B6; --line: #323746;
+    --link: #8FAEFF; --good: #6FD39A; --good-bg: #17301F; --bad: #FF8A93; --bad-bg: #3A1B1F;
+    --u0: #A3ADC0; --u1: #7DA3FF; --u2: #4FD1BF; --u3: #C79BF2; --u4: #F584B6; --u8: #E9B45A;
+    --code-bg: #20232D; --shadow: rgb(0 0 0 / .5); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #13151C; --surface: #1B1E27; --sunk: #232733; --ink: #E6E8EF; --muted: #A0A6B6; --line: #323746;
+  --link: #8FAEFF; --good: #6FD39A; --good-bg: #17301F; --bad: #FF8A93; --bad-bg: #3A1B1F;
+  --u0: #A3ADC0; --u1: #7DA3FF; --u2: #4FD1BF; --u3: #C79BF2; --u4: #F584B6; --u8: #E9B45A;
+  --code-bg: #20232D; --shadow: rgb(0 0 0 / .5); color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: inherit; }
+html { scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 70px); }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 18px; line-height: 1.65; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 40; background: var(--surface); }
+a { color: var(--link); text-underline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; border-radius: 3px; }
+h1, h2, h3, h4, nav, summary, button, label, .eyebrow, .quiz, .terms dt, table { font-family: var(--head); font-variation-settings: "CASL" 0.35, "MONO" 0; }
+code, pre, kbd { font-family: var(--mono); font-variation-settings: "MONO" 1, "CASL" 0; }
+.skip { position: absolute; left: -999px; } .skip:focus { left: 8px; top: 8px; background: var(--ink); color: var(--bg); padding: 8px 12px; z-index: 60; }
+
+/* Top nav */
+nav.units { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; background: var(--surface); border-bottom: 1px solid var(--line); }
+nav.units .inner { max-width: 1060px; margin: 0 auto; padding: 0 16px; display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+nav.units .inner a { flex: none; display: grid; gap: 3px; padding: 10px 12px 8px; text-decoration: none; color: var(--muted); font-size: .9rem; font-weight: 600; }
+nav.units .inner a:hover, nav.units .inner a[aria-current="true"] { color: var(--ink); }
+nav.units .inner a .bar { height: 3px; border-radius: 2px; background: var(--sunk); overflow: hidden; }
+nav.units .inner a .bar i { display: block; height: 100%; width: 0; background: var(--c, var(--u0)); transition: width .3s; }
+nav.units .inner a[aria-current="true"] .bar { background: color-mix(in srgb, var(--c, var(--u0)) 25%, var(--sunk)); }
+nav.units .inner a[aria-expanded="true"] { color: var(--ink); background: var(--sunk); }
+nav.units .inner a .nm { font-weight: 450; }
+nav.units .inner a .caret { font-size: .7em; margin-left: 4px; opacity: .6; }
+
+/* Section dropdown */
+.navpanel { position: absolute; top: 100%; left: 16px; width: min(400px, calc(100vw - 32px)); max-height: calc(100vh - 90px); overflow-y: auto; background: var(--surface); border: 1px solid var(--line); border-top: 3px solid var(--c, var(--u0)); border-radius: 0 0 10px 10px; box-shadow: 0 14px 30px var(--shadow); padding: 8px 6px; font-family: var(--head); font-variation-settings: "CASL" 0.35, "MONO" 0; }
+.navpanel[hidden] { display: none; }
+.navpanel a { display: flex; gap: 8px; align-items: baseline; padding: 6px 10px; border-radius: 6px; text-decoration: none; color: var(--ink); font-size: .92rem; line-height: 1.35; }
+.navpanel a:hover, .navpanel a:focus-visible { background: var(--sunk); }
+.navpanel a.ptitle { font-weight: 750; font-size: .98rem; }
+.navpanel a.ptitle small { display: block; font-weight: 400; font-size: .82rem; color: var(--muted); font-style: italic; font-family: var(--body); }
+.navpanel ol { list-style: none; margin: 4px 0 0; padding: 4px 0 0; border-top: 1px solid var(--line); }
+.navpanel .tick { flex: none; width: 1.1em; color: var(--c, var(--u0)); font-weight: 800; text-align: center; }
+.navpanel a[aria-current="true"] { background: color-mix(in srgb, var(--c, var(--u0)) 12%, var(--surface)); font-weight: 650; }
+.navpanel .extras { display: flex; flex-wrap: wrap; gap: 2px; margin-top: 4px; padding-top: 4px; border-top: 1px solid var(--line); }
+.navpanel .extras a { color: var(--muted); font-size: .85rem; }
+.navpanel .extras a:hover { color: var(--ink); }
+@media (max-width: 860px) { nav.units .inner a .nm { display: none; } }
+
+.wrap { max-width: 760px; margin: 0 auto; padding: 0 20px 80px; }
+header.hero { padding: 54px 0 20px; }
+.home { font-family: var(--head); font-size: .9rem; color: var(--muted); text-decoration: none; }
+.home:hover { color: var(--ink); text-decoration: underline; }
+header.hero h1 { font-size: clamp(2.3rem, 6vw, 3.6rem); line-height: 1.02; letter-spacing: -.02em; margin: 18px 0 16px; font-weight: 800; font-variation-settings: "CASL" 0.6, "MONO" 0; }
+header.hero h1 span { display: block; font-weight: 400; font-size: .5em; letter-spacing: 0; color: var(--muted); margin-top: 8px; font-variation-settings: "CASL" 0.6, "MONO" 0; }
+.lead { font-size: 1.12rem; }
+.howto { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin: 26px 0 0; }
+.howto div { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+.howto h2 { font-size: 1rem; margin: 0 0 4px; }
+.howto p { margin: 0; font-size: .95rem; color: var(--muted); line-height: 1.5; }
+
+/* Sections */
+section.unit { padding-top: 64px; }
+.unit-head { display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: start; border-top: 3px solid var(--c); padding-top: 18px; }
+.unit-num { font-family: var(--head); font-weight: 900; font-size: 4.2rem; line-height: .85; color: var(--c); font-variation-settings: "CASL" 1, "MONO" 0; min-width: 1ch; }
+.unit-head h2 { font-size: 2rem; line-height: 1.1; margin: 0 0 6px; letter-spacing: -.01em; font-weight: 800; }
+.bigq { margin: 0; color: var(--muted); font-style: italic; }
+.unit-intro { margin-top: 16px; }
+
+article.topic { margin-top: 38px; }
+article.topic > header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+article.topic h3 { font-size: 1.35rem; margin: 0; line-height: 1.25; font-weight: 750; }
+label.done { font-size: .82rem; color: var(--muted); display: inline-flex; gap: 6px; align-items: center; cursor: pointer; white-space: nowrap; }
+label.done input { accent-color: var(--c); width: 16px; height: 16px; }
+label.done:has(input:checked) { color: var(--c); font-weight: 650; }
+
+pre.code { background: var(--code-bg); border: 1px solid var(--line); border-left: 3px solid var(--c); border-radius: 6px; padding: 12px 14px; overflow-x: auto; font-size: .84rem; line-height: 1.55; margin: 14px 0; }
+pre.code .lang { display: block; font-size: .72rem; color: var(--muted); margin-bottom: 4px; font-variation-settings: "MONO" 0, "CASL" 0.35; }
+p code, li code, td code, dd code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; font-size: .86em; }
+
+details.check { margin: 14px 0; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+details.check summary { cursor: pointer; padding: 10px 14px; font-weight: 650; font-size: .95rem; list-style: none; display: flex; gap: 10px; }
+details.check summary::-webkit-details-marker { display: none; }
+details.check summary::before { content: "?"; flex: none; width: 22px; height: 22px; border-radius: 50%; background: var(--c); color: var(--surface); display: grid; place-items: center; font-size: .8rem; font-weight: 800; margin-top: 1px; }
+details.check[open] summary::before { content: "✓"; }
+details.check > div { padding: 0 14px 12px 46px; }
+details.check > div p { margin: 0 0 8px; }
+
+.more { font-size: .9rem; color: var(--muted); margin-top: 10px; }
+.more a { white-space: nowrap; }
+.note { border-left: 3px solid var(--c); background: color-mix(in srgb, var(--c) 7%, var(--surface)); padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 14px 0; }
+.note p { margin: 0; }
+table { border-collapse: collapse; width: 100%; font-size: .88rem; margin: 14px 0; }
+.tablewrap { overflow-x: auto; }
+th, td { border-bottom: 1px solid var(--line); padding: 7px 10px; text-align: left; vertical-align: top; }
+th { color: var(--muted); font-weight: 650; }
+
+/* Families */
+.family { margin-top: 40px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; }
+.family h3 { margin: 0 0 6px; font-size: 1.1rem; }
+.family ul { margin: 6px 0 0; padding-left: 20px; }
+.family li { margin: 4px 0; }
+
+/* Terms */
+.terms { margin-top: 40px; }
+.terms h3 { font-size: 1.1rem; margin: 0 0 8px; }
+dl.termlist { margin: 0; display: grid; grid-template-columns: minmax(130px, 200px) 1fr; border-top: 1px solid var(--line); }
+dl.termlist dt, dl.termlist dd { border-bottom: 1px solid var(--line); padding: 8px 0; margin: 0; }
+dl.termlist dt { font-weight: 700; font-size: .92rem; padding-right: 12px; }
+dl.termlist dd { font-size: .95rem; line-height: 1.5; }
+dl.termlist dd .tag { font-family: var(--head); font-size: .72rem; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; margin-left: 6px; white-space: nowrap; }
+
+/* Quiz */
+.quiz { margin-top: 40px; border: 2px solid var(--c); border-radius: 12px; padding: 18px 20px; background: var(--surface); }
+.quiz h3 { margin: 0; font-size: 1.15rem; }
+.quiz .score { color: var(--muted); font-size: .9rem; margin: 2px 0 10px; }
+.q { border-top: 1px solid var(--line); padding: 14px 0 6px; }
+.q fieldset { border: 0; margin: 0; padding: 0; }
+.q legend { font-weight: 650; margin-bottom: 8px; font-size: .98rem; line-height: 1.45; }
+.q legend pre { margin: 8px 0 0; font-weight: 400; }
+.q label { display: flex; gap: 10px; align-items: flex-start; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--line); margin: 6px 0; cursor: pointer; font-size: .95rem; line-height: 1.4; }
+.q label:hover { border-color: var(--c); }
+.q input { accent-color: var(--c); margin-top: 3px; }
+.q label.right { border-color: var(--good); background: var(--good-bg); }
+.q label.wrong { border-color: var(--bad); background: var(--bad-bg); }
+.q .fb { font-size: .9rem; margin: 6px 0 0; font-family: var(--body); }
+.q .fb strong { font-family: var(--head); }
+.quiz .reset { font: inherit; font-size: .85rem; border: 1px solid var(--line); background: var(--sunk); color: var(--ink); border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+
+/* Binary widget */
+.bits { margin: 16px 0; padding: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+.bits .row { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; }
+.bits button { font-family: var(--mono); font-variation-settings: "MONO" 1; display: grid; gap: 2px; place-items: center; padding: 8px 0; border-radius: 8px; border: 1.5px solid var(--line); background: var(--sunk); color: var(--muted); cursor: pointer; }
+.bits button b { font-size: 1.4rem; line-height: 1; }
+.bits button span { font-size: .7rem; }
+.bits button[aria-pressed="true"] { background: var(--c); border-color: var(--c); color: var(--surface); }
+.bits .out { display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: center; margin-top: 12px; font-family: var(--head); font-size: .95rem; }
+.bits .out strong { font-size: 1.3rem; }
+.bits input { width: 80px; font: inherit; padding: 4px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); }
+
+/* Glossary */
+.gsearch { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0; }
+.gsearch input { flex: 1 1 240px; font: inherit; font-family: var(--head); padding: 10px 12px; border-radius: 8px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); }
+.gsearch select { font: inherit; font-family: var(--head); padding: 8px; border-radius: 8px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); }
+
+footer { margin-top: 70px; border-top: 1px solid var(--line); padding-top: 16px; color: var(--muted); font-size: .9rem; }
+
+@media (max-width: 600px) {
+  body { font-size: 17px; }
+  .unit-num { font-size: 3rem; }
+  .unit-head h2 { font-size: 1.6rem; }
+  dl.termlist { grid-template-columns: 1fr; }
+  dl.termlist dt { border-bottom: 0; padding-bottom: 0; }
+  .bits button b { font-size: 1.1rem; }
+  details.check > div { padding-left: 14px; }
+}
+@media print {
+  nav.units, .navpanel, .quiz, .gsearch, label.done, .bits, .skip, .home { display: none !important; }
+  details.check > div { display: block !important; }
+  body { background: #fff; color: #000; font-size: 11pt; }
+  section.unit { break-before: page; }
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#start">Skip to the guide</a>
+<nav class="units" aria-label="Units"><div class="inner" id="unitnav"></div></nav>
+
+<div class="wrap">
+<header class="hero" id="start">
+  <a class="home" href="/">← thereisaneasierway.com</a>
+  <h1>Computer Science I Study Guide <span>Plain-language notes, practice and a glossary for students and families</span></h1>
+  <p class="lead">This guide follows the units we cover in class: how computers represent information, how the Internet works, designing apps, the building blocks of programming, and preparing for your PBM project. Each topic explains the idea, shows an example, and ends with a quick question so you can check yourself.</p>
+  <div class="howto">
+    <div><h2>Students</h2><p>Read a topic, try the “Check yourself” question before opening it, then tick “I’ve got this.” Your progress is saved in this browser.</p></div>
+    <div><h2>Families</h2><p>No computer science background needed. Each unit ends with questions you can ask at dinner. Explaining an idea out loud is one of the best ways to learn it.</p></div>
+    <div><h2>Before a test</h2><p>Take the practice quiz at the end of each unit, then review the key terms for anything you missed.</p></div>
+  </div>
+</header>
+
+<!-- ============================ COURSE ============================ -->
+<section class="unit" id="course" style="--c: var(--u0)" data-unit="0">
+  <div class="unit-head"><span class="unit-num" aria-hidden="true">★</span><div><h2>The course and the PBM</h2><p class="bigq">What are we learning, and how is it measured?</p></div></div>
+  <p class="unit-intro">Computer Science I (course code CS20) is a North Carolina Career and Technical Education (CTE) course in the Computer Science Principles pathway. It is a broad introduction to computing. It covers programming, but also data, networks, and how computing affects people and society. It counts toward North Carolina’s computer science graduation requirement.</p>
+
+  <article class="topic" id="course-pbm">
+    <header><h3>What is a PBM?</h3></header>
+    <p>Every CTE course ends with a <strong>Proof of Learning</strong>. Some courses use a multiple-choice state test. Computer Science I uses a <strong>Performance-Based Measurement (PBM)</strong> instead: rather than answering test questions, you show what you can do by completing a real task, such as designing, building, testing and explaining a program of your own.</p>
+    <p>That means the skills that matter most are practical ones: planning a program, writing code that works, finding and fixing errors, and explaining clearly how your code works and why you made the choices you did. Unit 8 walks through how to prepare.</p>
+    <div class="note"><p><strong>Your teacher will give you the PBM task, the rubric and the due dates.</strong> The task sheet and rubric are the final word on what’s required, so keep them handy and check your work against them.</p></div>
+  </article>
+
+  <article class="topic" id="course-standards">
+    <header><h3>The five course standards</h3></header>
+    <p>The state organizes Computer Science I into five essential standards. The percentages show roughly how much of the course each one covers.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Standard</th><th>What it covers</th><th>Share of course</th><th>Units here</th></tr></thead>
+      <tbody>
+        <tr><td>1.00 Creative development</td><td>Computing innovations, input and output, finding errors, designing user interfaces</td><td>20%</td><td>3, 8</td></tr>
+        <tr><td>2.00 Data</td><td>Binary numbers and how computers store information</td><td>15%</td><td>1</td></tr>
+        <tr><td>3.00 Algorithms and programming</td><td>Variables and lists, expressions, conditionals, procedures</td><td>30%</td><td>4, 8</td></tr>
+        <tr><td>4.00 Computing systems and networks</td><td>Network structures, how the Internet works, how data is sent</td><td>20%</td><td>2</td></tr>
+        <tr><td>5.00 Impacts of computing</td><td>Benefits and harms, legal and ethical issues, privacy</td><td>15%</td><td>1, 2</td></tr>
+      </tbody>
+    </table></div>
+    <p class="more">Official source: <a href="https://center.ncsu.edu/nccte-cms/course_info.php?course_id=1799">NC CTE course page for CS20 Computer Science I</a> · <a href="https://center.ncsu.edu/nccte-cms/course_standards.php?course_id=1799">CS20 course standards</a></p>
+  </article>
+</section>
+
+<!-- ============================ UNIT 1 ============================ -->
+<section class="unit" id="unit-1" style="--c: var(--u1)" data-unit="1">
+  <div class="unit-head"><span class="unit-num">1</span><div><h2>Digital Information</h2><p class="bigq">How can numbers, words, pictures and sound all be stored as 1s and 0s?</p></div></div>
+  <p class="unit-intro">Everything on a computer, from a text message to a movie, is stored as long strings of bits. This unit is about how we agree on what those bits mean, what gets lost when real-world information becomes digital, and who owns digital work once it is easy to copy.</p>
+
+  <article class="topic" id="u1-represent">
+    <header><h3>Bits and representing information</h3></header>
+    <p>A <strong>bit</strong> (short for <em>binary digit</em>) is the smallest piece of information a computer stores: a single 0 or 1. Physically it might be a high or low voltage, a magnetized or unmagnetized spot, or light on or off. Eight bits make a <strong>byte</strong>.</p>
+    <p>A bit pattern means nothing by itself. It only means something because the sender and receiver agree on a system. The pattern <code>01000001</code> is the number 65 if a program treats it as a number, and the letter “A” if the program treats it as text. That idea, that <em>the same bits can represent different things depending on how they are interpreted</em>, comes up again and again on tests.</p>
+    <p>The number of different patterns grows fast as you add bits. Each new bit doubles the possibilities, so <strong><em>n</em> bits can represent 2<sup><em>n</em></sup> different values</strong>. One bit gives 2 patterns, 3 bits give 8, 8 bits give 256.</p>
+    <p>Hiding the bits behind something easier to work with, like “a letter” or “a color,” is called <strong>abstraction</strong>. Abstraction is one of the most important ideas in the course: it lets people manage complexity by ignoring details they don’t need right now.</p>
+    <details class="check"><summary>Check yourself: how many bits do you need to give each of 50 students a different code?</summary><div><p><strong>6 bits.</strong> 5 bits give 2<sup>5</sup> = 32 patterns, which is not enough. 6 bits give 2<sup>6</sup> = 64, which covers all 50 with some left over.</p></div></details>
+    <p class="more">Read more: <a href="https://en.wikipedia.org/wiki/Bit">Bit</a> · <a href="https://en.wikipedia.org/wiki/Byte">Byte</a> · <a href="https://en.wikipedia.org/wiki/Abstraction_(computer_science)">Abstraction (computer science)</a></p>
+  </article>
+
+  <article class="topic" id="u1-binary">
+    <header><h3>Binary numbers</h3></header>
+    <p>We normally count in <strong>decimal</strong> (base 10). Each place is worth 10 times the place to its right: ones, tens, hundreds. <strong>Binary</strong> (base 2) works the same way, except each place is worth 2 times the place to its right: 1, 2, 4, 8, 16, 32, 64, 128.</p>
+    <p><strong>Binary to decimal:</strong> add up the place values wherever there is a 1. For <code>1011</code>: 8 + 0 + 2 + 1 = <strong>11</strong>.</p>
+    <p><strong>Decimal to binary:</strong> start from the biggest place value that fits and work down. For 13: 8 fits (5 left), 4 fits (1 left), 2 doesn’t fit, 1 fits. So 13 is <code>1101</code>.</p>
+    <p>Try it: click the bits below to switch them on and off, or type a number from 0 to 255.</p>
+    <div class="bits" id="bits" aria-label="Binary practice"></div>
+    <details class="check"><summary>Check yourself: what is <code>10010</code> in decimal, and what is the largest number 8 bits can hold?</summary><div><p><code>10010</code> = 16 + 2 = <strong>18</strong>. The largest 8-bit number is <code>11111111</code> = <strong>255</strong>. That’s one less than 256 because one of the 256 patterns is used for zero.</p></div></details>
+    <p class="more">Read more: <a href="https://en.wikipedia.org/wiki/Binary_number">Binary number</a> · <a href="https://en.wikipedia.org/wiki/Positional_notation">Positional notation</a></p>
+  </article>
+
+  <article class="topic" id="u1-overflow">
+    <header><h3>Overflow and roundoff errors</h3></header>
+    <p>Computers store numbers using a fixed number of bits, and that causes two kinds of errors.</p>
+    <p>An <strong>overflow error</strong> happens when a number is too big for the bits available. Picture a car odometer that only has six digits: after 999,999 miles it rolls back to 000,000. With 4 bits, the biggest number is 15, so 15 + 1 “rolls over” to 0.</p>
+    <p>A <strong>roundoff error</strong> happens because some fractions can’t be stored exactly in binary, just as 1/3 can’t be written exactly in decimal (0.3333…). The computer stores the closest value it can. In JavaScript, <code>0.1 + 0.2</code> gives <code>0.30000000000000004</code>. Tiny errors like this can add up over many calculations.</p>
+    <pre class="code"><span class="lang">JavaScript</span><code>console.log(0.1 + 0.2);          // 0.30000000000000004
+console.log(0.1 + 0.2 === 0.3);  // false</code></pre>
+    <details class="check"><summary>Check yourself: a game stores scores in 8 bits. A player’s score is 250 and they earn 10 more points. What goes wrong?</summary><div><p>An <strong>overflow error</strong>. 260 is bigger than 255, the largest 8-bit number, so the score can’t be stored correctly. It wraps around to a small number instead.</p></div></details>
+    <p class="more">Read more: <a href="https://en.wikipedia.org/wiki/Integer_overflow">Integer overflow</a> · <a href="https://en.wikipedia.org/wiki/Round-off_error">Round-off error</a> · <a href="https://en.wikipedia.org/wiki/Floating-point_arithmetic">Floating-point arithmetic</a></p>
+  </article>
+
+  <article class="topic" id="u1-text">
+    <header><h3>Representing text</h3></header>
+    <p>To store text, every character gets a number, and the number is stored in binary. <strong>ASCII</strong> is an early standard that uses 7 bits for 128 characters: English letters, digits, punctuation and some control codes. In ASCII, “A” is 65 and “a” is 97.</p>
+    <p>128 characters is nowhere near enough for the world’s languages, so modern systems use <strong>Unicode</strong>, which has codes for well over 100,000 characters, including Chinese, Arabic, Cherokee and emoji. The most common way to store Unicode, <strong>UTF-8</strong>, uses 1 to 4 bytes per character and matches ASCII for the first 128 characters.</p>
+    <details class="check"><summary>Check yourself: why can’t a system that uses only 7 bits per character display emoji?</summary><div><p>7 bits allow only 2<sup>7</sup> = 128 different codes, and those are already used for English letters, digits and symbols. There are no patterns left for anything else.</p></div></details>
+    <p class="more">Read more: <a href="https://en.wikipedia.org/wiki/ASCII">ASCII</a> · <a href="https://en.wikipedia.org/wiki/Unicode">Unicode</a> · <a href="https://en.wikipedia.org/wiki/UTF-8">UTF-8</a></p>
+  </article>
+
+  <article class="topic" id="u1-images">
+    <header><h3>Images, sound and analog data</h3></header>
+    <p>A digital image is a grid of <strong>pixels</strong> (picture elements). In a black-and-white image, each pixel can be one bit: 0 for black, 1 for white. Color images usually use the <strong>RGB</strong> model, where each pixel stores how much red, green and blue light to mix. With 8 bits per color, each pixel uses 24 bits, which allows 2<sup>24</sup> (about 16.7 million) colors.</p>
+    <p>The file size of an uncompressed image is <strong>width × height × bits per pixel</strong>. Files also contain <strong>metadata</strong>: data about the data, such as the image size, the date it was taken or the camera’s location.</p>
+    <p>The real world is <strong>analog</strong>: sound waves and light change smoothly and continuously. To make it digital, a device takes <strong>samples</strong>, measuring the value at regular intervals and storing each measurement in bits. More samples and more bits per sample get closer to the original, but a digital copy is always an approximation, and it takes more storage the more accurate it is.</p>
+    <details class="check"><summary>Check yourself: how many bytes does an uncompressed 100 × 100 pixel image use with 24-bit color?</summary><div><p>100 × 100 = 10,000 pixels. 10,000 × 24 bits = 240,000 bits. Divide by 8 to get <strong>30,000 bytes</strong> (about 30 KB).</p></div></details>
+    <p class="more">Read more: <a href="https://en.wikipedia.org/wiki/Pixel">Pixel</a> · <a href="https://en.wikipedia.org/wiki/RGB_color_model">RGB color model</a> · <a href="https://en.wikipedia.org/wiki/Sampling_(signal_processing)">Sampling</a> · <a href="https://en.wikipedia.org/wiki/Metadata">Metadata</a></p>
+  </article>
+
+  <article class="topic" id="u1-compression">
+    <header><h3>Compression: lossless and lossy</h3></header>
+    <p><strong>Compression</strong> reduces the number of bits needed to store or send data. There are two kinds, and choosing between them is a common test question.</p>
+    <p><strong>Lossless compression</strong> lets you rebuild the original <em>exactly</em>. It works by finding patterns and repetition. A simple version is run-length encoding: <code>WWWWWWBBB</code> becomes <code>6W3B</code>. ZIP files and PNG images are lossless. Use it when every bit matters: documents, code, spreadsheets, medical scans.</p>
+    <p><strong>Lossy compression</strong> throws away details people are unlikely to notice, so files get much smaller, but the original can’t be fully restored. JPEG photos, MP3 music and streaming video are lossy. Use it when small size matters more than perfect quality.</p>
+    <p>How much a file shrinks depends on the data. Data with lots of repetition compresses well; random-looking data barely compresses at all.</p>
+    <details class="check"><summary>Check yourself: a hospital sends X-ray images to a specialist. Lossy or lossless, and why?</summary><div><p><strong>Lossless.</strong> A doctor needs every detail, and lossy compression could remove something that matters for a diagnosis. Smaller file size isn’t worth the risk.</p></div></details>
+    <p class="more">Read more: <a href="https://en.wikipedia.org/wiki/Data_compression">Data compression</a> · <a href="https://en.wikipedia.org/wiki/Lossless_compression">Lossless compression</a> · <a href="https://en.wikipedia.org/wiki/Lossy_compression">Lossy compression</a> · <a href="https://en.wikipedia.org/wiki/Run-length_encoding">Run-length encoding</a></p>
+  </article>
+
+  <article class="topic" id="u1-ip">
+    <header><h3>Intellectual property and sharing</h3></header>
+    <p>Digital files can be copied perfectly and instantly, which makes questions about ownership more important. <strong>Intellectual property</strong> is creative work that belongs to whoever made it: writing, music, art, photos, code.</p>
+    <p><strong>Copyright</strong> protects a work automatically as soon as it is created; you don’t have to register anything. Others need permission to copy or share it, with some exceptions such as <strong>fair use</strong>, which in the United States allows limited use for purposes like commentary, criticism and teaching.</p>
+    <p>Creators can choose to share more openly. <strong>Creative Commons</strong> licenses let a creator pick the rules: for example, “use it if you credit me” (BY), “not for commercial use” (NC), or “share your version under the same terms” (SA). <strong>Open-source</strong> software publishes its code so anyone can use and improve it. Works in the <strong>public domain</strong> have no copyright at all, usually because it has expired.</p>
+    <details class="check"><summary>Check yourself: you find a photo licensed CC BY-NC. Can you use it on a poster for a school club event?</summary><div><p><strong>Yes, as long as you credit the photographer</strong> (BY) and the poster isn’t for a commercial purpose (NC). A free school club event is not commercial.</p></div></details>
+    <p class="more">Read more: <a href="https://en.wikipedia.org/wiki/Copyright">Copyright</a> · <a href="https://en.wikipedia.org/wiki/Creative_Commons_license">Creative Commons license</a> · <a href="https://en.wikipedia.org/wiki/Open-source_software">Open-source software</a> · <a href="https://en.wikipedia.org/wiki/Public_domain">Public domain</a></p>
+  </article>
+
+  <article class="topic" id="u1-impacts">
+    <header><h3>Impacts of digital information</h3></header>
+    <p>Turning everything into data has big benefits: information can be searched, shared and preserved cheaply, and people anywhere can learn and create. It also creates new problems. Digital information can be permanent and hard to delete, copied without permission, collected without people realizing it, or altered convincingly, as with edited photos and deepfakes.</p>
+    <p>Impact questions usually ask you to identify a benefit and a harm of a computing innovation, or to notice that the same technology can help some people while harming others. There is rarely a single “right” side; the skill is reasoning about who is affected and how.</p>
+    <details class="check"><summary>Check yourself: name one benefit and one harm of phone photos automatically including location metadata.</summary><div><p><strong>Benefit:</strong> you can sort and find photos by place, or remember where something was taken. <strong>Harm:</strong> sharing a photo online can reveal where you live or where you are right now.</p></div></details>
+  </article>
+  <div class="family"><h3>For families: ask your student</h3><ul>
+    <li>“What’s 13 in binary? How did you figure it out?”</li>
+    <li>“Why does a photo from your phone look worse after you send it through some apps?” (lossy compression)</li>
+    <li>“Can you use any picture you find online for a project? What would you check first?”</li>
+  </ul></div>
+  <div class="terms" data-terms="1"></div>
+  <div class="quiz" data-quiz="1"></div>
+</section>
+
+<!-- ============================ UNIT 2 ============================ -->
+<section class="unit" id="unit-2" style="--c: var(--u2)" data-unit="2">
+  <div class="unit-head"><span class="unit-num">2</span><div><h2>The Internet</h2><p class="bigq">How does a message get from your phone to a server across the world, even when parts of the network fail?</p></div></div>
+  <p class="unit-intro">The Internet isn’t one thing owned by one company. It is millions of separate networks that agree to follow the same rules. This unit covers those rules, how data actually travels, and who does and doesn’t have access.</p>
+
+  <article class="topic" id="u2-networks">
+    <header><h3>Networks, paths and bandwidth</h3></header>
+    <p>A <strong>computing device</strong> is any physical thing that can run a program: a laptop, phone, server, router or smart sensor. A <strong>computing system</strong> is a group of devices and programs working together. A <strong>computer network</strong> is a group of connected devices that can send and receive data.</p>
+    <p>A <strong>path</strong> is the sequence of directly connected devices that data travels through from sender to receiver. <strong>Routing</strong> is the process of finding that path.</p>
+    <p><strong>Bandwidth</strong> is the maximum amount of data a connection can send in a fixed amount of time, usually measured in bits per second (for example, 100 megabits per second). <strong>Latency</strong> is the delay between sending data and it arriving. A connection can have high bandwidth but still feel slow if latency is high.</p>
+    <details class="check"><summary>Check yourself: what’s the difference between bandwidth and latency? Use a highway as an analogy.</summary><div><p>Bandwidth is how many lanes the highway has: how much traffic can move at once. Latency is how long one car takes to get from one end to the other.</p></div></details>
+    <p class="more">Read more: <a href="https://en.wikipedia.org/wiki/Computer_network">Computer network</a> · <a href="https://en.wikipedia.org/wiki/Bandwidth_(computing)">Bandwidth (computing)</a> · <a href="https://en.wikipedia.org/wiki/Latency_(engineering)">Latency</a></p>
+  </article>
+
+  <article class="topic" id="u2-protocols">
+    <header><h3>The Internet, protocols and IP addresses</h3></header>
+    <p>The <strong>Internet</strong> is a network of networks. Its parts are owned by different companies, schools and governments, but they can all communicate because they follow the same <strong>protocols</strong>: agreed-upon rules for how data is formatted and sent. Internet protocols are <strong>open</strong>, meaning anyone can read them and build devices that follow them without paying anyone. That openness is a big reason the Internet grew so quickly.</p>
+    <p>Every device on the Internet needs an <strong>IP address</strong> so data can be delivered to it, like a mailing address. <strong>IPv4</strong> addresses are 32 bits long, which allows about 4.3 billion addresses. That turned out to be too few for every phone, laptop and smart device, so <strong>IPv6</strong> uses 128 bits, which allows about 3.4 × 10<sup>38</sup> addresses: effectively unlimited.</p>
+    <details class="check"><summary>Check yourself: why does it matter that Internet protocols are open?</summary><div><p>Anyone can build hardware or software that connects to the Internet without permission or fees. That lets the network keep growing, and devices from different manufacturers all work together.</p></div></details>
+    <p class="more">Read more: <a href="https://en.wikipedia.org/wiki/Internet">Internet</a> · <a href="https://en.wikipedia.org/wiki/Communication_protocol">Communication protocol</a> · <a href="https://en.wikipedia.org/wiki/IP_address">IP address</a> · <a href="https://en.wikipedia.org/wiki/IPv6">IPv6</a></p>
+  </article>
+
+  <article class="topic" id="u2-routing">
+    <header><h3>Routing, redundancy and fault tolerance</h3></header>
+    <p><strong>Routers</strong> pass data along toward its destination. There usually isn’t one fixed path; each router chooses where to send data next based on current conditions, so two messages between the same devices may take different routes.</p>
+    <p>The Internet was designed with <strong>redundancy</strong>: extra connections, so there is more than one path between devices. That makes it <strong>fault tolerant</strong>: if a router fails or a cable is cut, data can be routed around the problem. Redundancy costs more, but it makes the system much more reliable.</p>
+    <p>Test questions often show a small network diagram and ask how many connections could fail before two devices can no longer communicate. Look for every possible path between them, then find the connections that all paths depend on.</p>
+    <pre class="code"><span class="lang">Diagram</span><code>A ── B ── D
+│         │
+└── C ────┘
+
+A can reach D through B or through C.
+If the B–D connection fails, A still reaches D through C.
+The network is fault tolerant for that single failure.</code></pre>
+    <details class="check"><summary>Check yourself: in the diagram, what is the smallest number of connections that could fail and leave A unable to reach D?</summary><div><p><strong>Two.</strong> One on each path, for example A–B and C–D. Any single failure still leaves the other path working.</p></div></details>
+    <p class="more">Read more: <a href="https://en.wikipedia.org/wiki/Routing">Routing</a> · <a href="https://en.wikipedia.org/wiki/Router_(computing)">Router</a> · <a href="https://en.wikipedia.org/wiki/Fault_tolerance">Fault tolerance</a></p>
+  </article>
+
+  <article class="topic" id="u2-packets">
+    <header><h3>Packets, TCP and UDP</h3></header>
+    <p>Large pieces of data aren’t sent all at once. They are split into small chunks called <strong>packets</strong>. Each packet carries part of the data plus a header with information like where it came from, where it’s going, and its place in the sequence. Packets travel independently, so they can take different paths and arrive out of order, or occasionally not at all.</p>
+    <p><strong>TCP</strong> (Transmission Control Protocol) handles this: the receiver uses the sequence numbers to put packets back in order and asks the sender to resend any that went missing. TCP is used when everything must arrive correctly: web pages, email, file downloads.</p>
+    <p><strong>UDP</strong> (User Datagram Protocol) sends packets without checking that they arrived or putting them in order. It’s faster, and it’s used when speed matters more than perfection: video calls, live streams, online games. A lost packet might cause a brief glitch, but waiting for a resend would be worse.</p>
+    <details class="check"><summary>Check yourself: why might a video call use UDP instead of TCP?</summary><div><p>In a live conversation, a late packet is useless; the moment has passed. It’s better to skip it and keep going than to pause everything while it’s resent.</p></div></details>
+    <p class="more">Read more: <a href="https://en.wikipedia.org/wiki/Network_packet">Network packet</a> · <a href="https://en.wikipedia.org/wiki/Packet_switching">Packet switching</a> · <a href="https://en.wikipedia.org/wiki/Transmission_Control_Protocol">TCP</a> · <a href="https://en.wikipedia.org/wiki/User_Datagram_Protocol">UDP</a></p>
+  </article>
+
+  <article class="topic" id="u2-web">
+    <header><h3>DNS, HTTP and the World Wide Web</h3></header>
+    <p>The <strong>Internet</strong> and the <strong>World Wide Web</strong> are not the same thing. The Internet is the network itself: the devices, connections and protocols. The Web is one service that runs <em>on</em> the Internet: a system of linked pages and apps you reach with a browser. Email, video calls and online games also use the Internet without being part of the Web.</p>
+    <p>People use names like <code>example.com</code>, but computers need IP addresses. The <strong>Domain Name System (DNS)</strong> is like the Internet’s phone book: it translates domain names into IP addresses. DNS is spread across many servers in a hierarchy, so no single server has to know every address.</p>
+    <p>Once your browser knows the address, it uses <strong>HTTP</strong> (Hypertext Transfer Protocol) to request a page, and the server sends a response back. <strong>HTTPS</strong> is the same thing with encryption, so people in between can’t read or change the data.</p>
+    <details class="check"><summary>Check yourself: put these in order for visiting a website: HTTP request, DNS lookup, page displayed.</summary><div><p><strong>DNS lookup</strong> (find the IP address) → <strong>HTTP request</strong> (ask that server for the page) → <strong>page displayed</strong> (browser shows the response).</p></div></details>
+    <p class="more">Read more: <a href="https://en.wikipedia.org/wiki/World_Wide_Web">World Wide Web</a> · <a href="https://en.wikipedia.org/wiki/Domain_Name_System">Domain Name System</a> · <a href="https://en.wikipedia.org/wiki/HTTP">HTTP</a> · <a href="https://en.wikipedia.org/wiki/HTTPS">HTTPS</a></p>
+  </article>
+
+  <article class="topic" id="u2-impact">
+    <header><h3>Scalability and the digital divide</h3></header>
+    <p><strong>Scalability</strong> is a system’s ability to keep working well as it grows. The Internet’s open protocols and lack of central control let it scale from a few research computers to billions of devices.</p>
+    <p>The <strong>digital divide</strong> is the gap between people who have reliable access to computing and the Internet and people who don’t. It can depend on where someone lives (rural areas often have fewer options), income, age, disability, or the country they live in. It affects access to school, jobs, healthcare and government services. Individuals, organizations and governments can all make it smaller or larger, for example by funding broadband, providing devices, or designing accessible websites.</p>
+    <p>Related debates include <strong>net neutrality</strong> (whether Internet providers should treat all traffic equally) and censorship (governments restricting what people can access).</p>
+    <details class="check"><summary>Check yourself: a school moves all homework online. Who might this disadvantage, and what could reduce the harm?</summary><div><p>Students without home Internet or a personal device. Options include lending laptops or hotspots, keeping the library or computer lab open after school, or allowing work to be downloaded and done offline.</p></div></details>
+    <p class="more">Read more: <a href="https://en.wikipedia.org/wiki/Scalability">Scalability</a> · <a href="https://en.wikipedia.org/wiki/Digital_divide">Digital divide</a> · <a href="https://en.wikipedia.org/wiki/Net_neutrality">Net neutrality</a></p>
+  </article>
+  <div class="family"><h3>For families: ask your student</h3><ul>
+    <li>“What actually happens between typing a website name and seeing the page?”</li>
+    <li>“If a cable under the ocean gets cut, why doesn’t the whole Internet go down?”</li>
+    <li>“Who in our town might not have good Internet access? What could help?”</li>
+  </ul></div>
+  <div class="terms" data-terms="2"></div>
+  <div class="quiz" data-quiz="2"></div>
+</section>
+
+<!-- ============================ UNIT 3 ============================ -->
+<section class="unit" id="unit-3" style="--c: var(--u3)" data-unit="3">
+  <div class="unit-head"><span class="unit-num">3</span><div><h2>Intro to App Design</h2><p class="bigq">How do teams design and build apps that people actually want to use?</p></div></div>
+  <p class="unit-intro">Before writing much code, good developers figure out who they’re building for and test ideas quickly. This unit introduces the design process, user interfaces, event-driven programming and the habits of working on a team.</p>
+
+  <article class="topic" id="u3-process">
+    <header><h3>The design process</h3></header>
+    <p>Software is rarely built right the first time. Developers use a cycle: <strong>investigate</strong> what users need, <strong>design</strong> a solution, <strong>build</strong> a prototype, <strong>test</strong> it with real people, and <strong>reflect</strong> on what to change, then go around again. Repeating that cycle to improve the product is called <strong>iterative development</strong>. Building and testing the program in small working pieces, one at a time, is <strong>incremental development</strong>. Most real projects use both.</p>
+    <p><strong>User-centered design</strong> means making decisions based on the people who will actually use the app. Developers learn about users through surveys, interviews, observation and testing. A <strong>prototype</strong> is an early, rough version (even a paper sketch) used to test ideas before spending time on code.</p>
+    <details class="check"><summary>Check yourself: during testing, three users can’t find the “Save” button. What should the team do next?</summary><div><p>Go back to the design step: change where the button is or how it looks, then test again with users to see if the change worked. That loop is iterative development.</p></div></details>
+    <p class="more">Read more: <a href="https://en.wikipedia.org/wiki/Iterative_design">Iterative design</a> · <a href="https://en.wikipedia.org/wiki/User-centered_design">User-centered design</a> · <a href="https://en.wikipedia.org/wiki/Software_prototyping">Software prototyping</a></p>
+  </article>
+
+  <article class="topic" id="u3-events">
+    <header><h3>User interfaces and event-driven programming</h3></header>
+    <p>The <strong>user interface</strong> (UI) is everything the user sees and interacts with: buttons, text boxes, labels, dropdowns, images and screens. In App Lab, each UI element has an <strong>ID</strong>, a unique name the code uses to refer to it.</p>
+    <p>Most apps are <strong>event-driven</strong>. Instead of running from top to bottom and stopping, the program waits for <strong>events</strong> (a click, a key press, text being typed) and runs a specific piece of code, an <strong>event handler</strong>, when each one happens.</p>
+    <pre class="code"><span class="lang">JavaScript (App Lab)</span><code>onEvent("greetButton", "click", function() {
+  var name = getText("nameInput");
+  setText("messageLabel", "Hello, " + name + "!");
+});</code></pre>
+    <p>Here, nothing happens until the user clicks the element with the ID <code>greetButton</code>. Then the program reads the text box, builds a message, and shows it in a label.</p>
+    <details class="check"><summary>Check yourself: the code above runs, but clicking the button does nothing. The button’s ID in Design mode is <code>greetBtn</code>. What’s wrong?</summary><div><p>The ID in the code (<code>"greetButton"</code>) doesn’t match the element’s actual ID (<code>greetBtn</code>), so the event handler is attached to nothing. IDs must match exactly, including capitalization.</p></div></details>
+    <p class="more">Read more: <a href="https://en.wikipedia.org/wiki/Event-driven_programming">Event-driven programming</a> · <a href="https://en.wikipedia.org/wiki/User_interface_design">User interface design</a></p>
+  </article>
+
+  <article class="topic" id="u3-io">
+    <header><h3>Inputs and outputs</h3></header>
+    <p><strong>Input</strong> is data sent to a program: text a user types, a click, a sensor reading, a file, or data from another program. <strong>Output</strong> is anything a program produces: text on screen, an image, a sound, a vibration, or data sent somewhere else.</p>
+    <p>A program’s behavior is how it responds to different inputs. Describing a program usually means describing what goes in, what happens, and what comes out. You’ll need exactly this skill for your PBM project, where you describe what your program takes in and gives back.</p>
+    <details class="check"><summary>Check yourself: name the input and output of a step-counter app.</summary><div><p><strong>Input:</strong> motion readings from the phone’s accelerometer (a sensor). <strong>Output:</strong> the step count shown on screen, and possibly a notification when you hit a goal.</p></div></details>
+  </article>
+
+  <article class="topic" id="u3-collab">
+    <header><h3>Collaboration and pair programming</h3></header>
+    <p>In <strong>pair programming</strong>, two people share one computer. The <strong>driver</strong> types the code; the <strong>navigator</strong> reviews each line, thinks ahead and catches mistakes. They switch roles often.</p>
+    <p>Teams with different backgrounds and perspectives build better software: people notice different problems and think of different users, which helps avoid <strong>bias</strong> in the final product. Good collaboration takes communication, giving and receiving useful feedback, and resolving disagreements respectfully.</p>
+    <details class="check"><summary>Check yourself: why might a team that includes people of different ages catch problems a team of only teenagers would miss?</summary><div><p>Different people have different needs and habits. An older user might struggle with tiny text or unclear icons that a teenager wouldn’t notice. Diverse teams spot these problems before users do.</p></div></details>
+    <p class="more">Read more: <a href="https://en.wikipedia.org/wiki/Pair_programming">Pair programming</a></p>
+  </article>
+
+  <article class="topic" id="u3-debug">
+    <header><h3>Debugging and testing</h3></header>
+    <p>Finding and fixing errors is called <strong>debugging</strong>. Know these three kinds of errors:</p>
+    <p>A <strong>syntax error</strong> breaks the rules of the language, like a missing parenthesis or misspelled command, so the program won’t run. A <strong>runtime error</strong> happens while the program is running, like trying to use an element that doesn’t exist. A <strong>logic error</strong> is the sneakiest: the program runs but gives the wrong result, like averaging by dividing by the wrong number.</p>
+    <p>Useful strategies: read the error message carefully; add <code>console.log()</code> to see what values your variables actually hold; trace the code by hand; explain your code line by line to someone else (or a rubber duck); and change one thing at a time.</p>
+    <p><strong>Testing</strong> means running the program with chosen inputs and comparing the actual output to the expected output. Good tests include normal values, edge cases (like 0, empty text, or the largest allowed value), and invalid input.</p>
+    <details class="check"><summary>Check yourself: a grade calculator runs without errors but shows 85 for test scores of 80 and 90 and 100. What kind of error is this?</summary><div><p>A <strong>logic error</strong>. The correct average is 90; the program runs but calculates the wrong answer (perhaps dividing by the wrong count or adding the wrong values).</p></div></details>
+    <p class="more">Read more: <a href="https://en.wikipedia.org/wiki/Debugging">Debugging</a> · <a href="https://en.wikipedia.org/wiki/Software_bug">Software bug</a> · <a href="https://en.wikipedia.org/wiki/Rubber_duck_debugging">Rubber duck debugging</a></p>
+  </article>
+
+  <article class="topic" id="u3-docs">
+    <header><h3>Comments and documentation</h3></header>
+    <p><strong>Comments</strong> are notes in code that the computer ignores. They explain what a section of code does and why, which helps teammates and your future self. In JavaScript, a line starting with <code>//</code> is a comment.</p>
+    <p>Documentation also means giving credit. If you use code, images or ideas from someone else, including code from an AI tool, say so in a comment with where it came from. This matters for your PBM project, where uncredited code counts as plagiarism.</p>
+    <pre class="code"><span class="lang">JavaScript</span><code>// Shows a greeting using the name the user typed
+onEvent("greetButton", "click", function() {
+  setText("messageLabel", "Hello, " + getText("nameInput") + "!");
+});
+
+// Background image: "Sunset" by J. Rivera, CC BY 4.0</code></pre>
+  </article>
+  <div class="family"><h3>For families: ask your student</h3><ul>
+    <li>“Show me an app you’re building. What did you change after someone else tried it?”</li>
+    <li>“What’s the difference between a bug that crashes the app and one that gives the wrong answer?”</li>
+    <li>“In pair programming, which role do you prefer, and why?”</li>
+  </ul></div>
+  <div class="terms" data-terms="3"></div>
+  <div class="quiz" data-quiz="3"></div>
+</section>
+
+<!-- ============================ UNIT 4 ============================ -->
+<section class="unit" id="unit-4" style="--c: var(--u4)" data-unit="4">
+  <div class="unit-head"><span class="unit-num">4</span><div><h2>Variables, Conditionals, and Functions</h2><p class="bigq">How do programs remember things, make decisions and stay organized?</p></div></div>
+  <p class="unit-intro">These are the core building blocks of every program. In class you write them in JavaScript in App Lab. Tests, worksheets and the Code.org reference sheet often show code in a simple pseudocode instead, so every example here is shown both ways.</p>
+  <div class="note"><p><strong>Reading pseudocode:</strong> <code>←</code> means “store this value in the variable.” <code>=</code> means “is equal to” (a comparison, not storing). <code>DISPLAY()</code> shows output. Lists start at index <strong>1</strong> in pseudocode, but at 0 in JavaScript.</p></div>
+
+  <article class="topic" id="u4-vars">
+    <header><h3>Variables and assignment</h3></header>
+    <p>A <strong>variable</strong> is a named place to store a value so the program can use it later. Giving a variable a value is called <strong>assignment</strong>. A variable holds only one value at a time, and it always holds the <em>most recent</em> value assigned to it.</p>
+    <p>Values have <strong>data types</strong>: numbers (<code>42</code>), <strong>strings</strong> of text (<code>"hello"</code>), <strong>Booleans</strong> (<code>true</code> or <code>false</code>), and later, lists. Use names that say what the value means, like <code>score</code> or <code>userName</code>, not <code>x</code>.</p>
+    <pre class="code"><span class="lang">Pseudocode</span><code>a ← 1
+b ← a
+a ← 2
+DISPLAY(b)</code></pre>
+    <pre class="code"><span class="lang">JavaScript</span><code>var a = 1;
+var b = a;
+a = 2;
+console.log(b);</code></pre>
+    <details class="check"><summary>Check yourself: what does the code above display?</summary><div><p><strong>1.</strong> When <code>b ← a</code> runs, b gets a copy of the value 1. Changing a afterwards doesn’t change b. Students often guess 2, and this exact trick appears on tests.</p></div></details>
+    <p class="more">Read more: <a href="https://en.wikipedia.org/wiki/Variable_(computer_science)">Variable (computer science)</a> · <a href="https://en.wikipedia.org/wiki/Assignment_(computer_science)">Assignment</a> · <a href="https://en.wikipedia.org/wiki/Data_type">Data type</a></p>
+  </article>
+
+  <article class="topic" id="u4-expr">
+    <header><h3>Expressions, MOD and strings</h3></header>
+    <p>An <strong>expression</strong> is anything that produces a value, like <code>price * 2</code> or <code>score + 10</code>. The usual order of operations applies: multiplication and division before addition and subtraction, and parentheses first.</p>
+    <p><strong>MOD</strong> gives the remainder after division. <code>17 MOD 5</code> is 2, because 17 ÷ 5 is 3 with 2 left over. In JavaScript it’s written <code>%</code>. MOD is handy for checking if a number is even (<code>n MOD 2 = 0</code>) or for wrapping around, like hours on a clock. MOD has the same precedence as <code>*</code> and <code>/</code>.</p>
+    <p>Joining strings is called <strong>concatenation</strong>. In JavaScript you use <code>+</code>. Watch out: <code>+</code> adds numbers but joins strings, so <code>"5" + 3</code> is <code>"53"</code>, not 8. That’s why App Lab has both <code>getText()</code> (returns a string) and <code>getNumber()</code> (returns a number).</p>
+    <pre class="code"><span class="lang">JavaScript</span><code>console.log(17 % 5);        // 2
+console.log("5" + 3);       // "53"  (string joined)
+console.log(5 + 3);         // 8     (numbers added)
+var name = "Ava";
+console.log("Hi, " + name); // "Hi, Ava"</code></pre>
+    <details class="check"><summary>Check yourself: what is <code>(4 + 8) MOD 5 * 2</code>?</summary><div><p>Parentheses first: 12. Then MOD and * have the same precedence, so go left to right: 12 MOD 5 = 2, then 2 * 2 = <strong>4</strong>.</p></div></details>
+    <p class="more">Read more: <a href="https://en.wikipedia.org/wiki/Modulo">Modulo</a> · <a href="https://en.wikipedia.org/wiki/Concatenation">Concatenation</a> · <a href="https://en.wikipedia.org/wiki/String_(computer_science)">String</a></p>
+  </article>
+
+  <article class="topic" id="u4-bool">
+    <header><h3>Booleans and logic</h3></header>
+    <p>A <strong>Boolean expression</strong> evaluates to <code>true</code> or <code>false</code>. <strong>Relational operators</strong> compare values: <code>=</code>, <code>≠</code>, <code>&gt;</code>, <code>&lt;</code>, <code>≥</code>, <code>≤</code> in pseudocode (in JavaScript: <code>==</code>, <code>!=</code>, <code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code>, <code>&lt;=</code>).</p>
+    <p><strong>Logical operators</strong> combine Booleans. <code>AND</code> is true only if both sides are true. <code>OR</code> is true if at least one side is true. <code>NOT</code> flips true and false. In JavaScript they’re written <code>&amp;&amp;</code>, <code>||</code> and <code>!</code>.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>A</th><th>B</th><th>A AND B</th><th>A OR B</th><th>NOT A</th></tr></thead>
+      <tbody>
+        <tr><td>true</td><td>true</td><td>true</td><td>true</td><td>false</td></tr>
+        <tr><td>true</td><td>false</td><td>false</td><td>true</td><td>false</td></tr>
+        <tr><td>false</td><td>true</td><td>false</td><td>true</td><td>true</td></tr>
+        <tr><td>false</td><td>false</td><td>false</td><td>false</td><td>true</td></tr>
+      </tbody>
+    </table></div>
+    <details class="check"><summary>Check yourself: write a condition that is true when <code>age</code> is a teenager (13 through 19).</summary><div><p><code>(age ≥ 13) AND (age ≤ 19)</code>. Both must be true. Using OR would be true for every age, since every number is either at least 13 or at most 19.</p></div></details>
+    <p class="more">Read more: <a href="https://en.wikipedia.org/wiki/Boolean_data_type">Boolean data type</a> · <a href="https://en.wikipedia.org/wiki/Relational_operator">Relational operator</a> · <a href="https://en.wikipedia.org/wiki/Truth_table">Truth table</a></p>
+  </article>
+
+  <article class="topic" id="u4-cond">
+    <header><h3>Conditionals: making decisions</h3></header>
+    <p>Programs normally run one statement after another; that’s <strong>sequencing</strong>. A <strong>conditional</strong> (if-statement) changes that flow: it runs different code depending on whether a Boolean expression is true or false. This is called <strong>selection</strong>.</p>
+    <pre class="code"><span class="lang">Pseudocode</span><code>IF (score ≥ 90)
+{
+   DISPLAY("A")
+}
+ELSE
+{
+   IF (score ≥ 80)
+   {
+      DISPLAY("B")
+   }
+   ELSE
+   {
+      DISPLAY("Keep going")
+   }
+}</code></pre>
+    <pre class="code"><span class="lang">JavaScript</span><code>if (score >= 90) {
+  console.log("A");
+} else if (score >= 80) {
+  console.log("B");
+} else {
+  console.log("Keep going");
+}</code></pre>
+    <p>A conditional inside another conditional is a <strong>nested conditional</strong>. Order matters: the program checks conditions from the top and runs the <em>first</em> one that is true, then skips the rest.</p>
+    <details class="check"><summary>Check yourself: if the first condition were <code>score ≥ 80</code> and the second were <code>score ≥ 90</code>, what would a score of 95 display?</summary><div><p><strong>“B”.</strong> 95 ≥ 80 is true, so the first branch runs and the rest are skipped. The “A” branch can never be reached. That’s a logic error caused by ordering.</p></div></details>
+    <p class="more">Read more: <a href="https://en.wikipedia.org/wiki/Conditional_(computer_programming)">Conditional (computer programming)</a> · <a href="https://en.wikipedia.org/wiki/Control_flow">Control flow</a></p>
+  </article>
+
+  <article class="topic" id="u4-func">
+    <header><h3>Functions and procedural abstraction</h3></header>
+    <p>A <strong>function</strong> (pseudocode calls it a <strong>procedure</strong>) is a named group of instructions. You <strong>define</strong> it once, then <strong>call</strong> it by name whenever you need it. Functions remove repeated code, make programs easier to read, and let you fix a bug in one place instead of many.</p>
+    <p>Using a function without needing to know how it works inside is called <strong>procedural abstraction</strong>. You call <code>setText()</code> constantly without knowing how App Lab draws text on the screen.</p>
+    <pre class="code"><span class="lang">Pseudocode</span><code>PROCEDURE resetGame()
+{
+   score ← 0
+   lives ← 3
+   DISPLAY("New game!")
+}
+
+resetGame()</code></pre>
+    <pre class="code"><span class="lang">JavaScript</span><code>function resetGame() {
+  score = 0;
+  lives = 3;
+  setText("statusLabel", "New game!");
+}
+
+onEvent("restartButton", "click", function() {
+  resetGame();
+});</code></pre>
+    <p>Later you’ll give functions <strong>parameters</strong>: inputs that change what the function does each time it’s called (like <code>greet("Ava")</code> versus <code>greet("Leo")</code>). A procedure with a parameter makes a strong PBM project, so it’s worth getting comfortable with them early.</p>
+    <details class="check"><summary>Check yourself: a game resets the score and lives in four different places in the code. Why put that in a function?</summary><div><p>If the starting values change (say, 5 lives instead of 3), you change one line instead of four, and you can’t accidentally miss one. The code is also shorter and easier to read.</p></div></details>
+    <p class="more">Read more: <a href="https://en.wikipedia.org/wiki/Function_(computer_programming)">Function (computer programming)</a> · <a href="https://en.wikipedia.org/wiki/Parameter_(computer_programming)">Parameter</a></p>
+  </article>
+
+  <article class="topic" id="u4-trace">
+    <header><h3>Tracing code by hand</h3></header>
+    <p>Many test questions show code and ask what it displays. The reliable method is a <strong>trace table</strong>: write each variable as a column and update it line by line, exactly as the computer would. Don’t guess from what the code looks like it should do.</p>
+    <pre class="code"><span class="lang">Pseudocode</span><code>x ← 5
+y ← x * 2
+IF (y MOD 3 = 1)
+{
+   x ← x + y
+}
+y ← y - x
+DISPLAY(x)
+DISPLAY(y)</code></pre>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Line</th><th>x</th><th>y</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td><code>x ← 5</code></td><td>5</td><td>–</td><td></td></tr>
+        <tr><td><code>y ← x * 2</code></td><td>5</td><td>10</td><td></td></tr>
+        <tr><td><code>IF (y MOD 3 = 1)</code></td><td>5</td><td>10</td><td>10 MOD 3 is 1, so true</td></tr>
+        <tr><td><code>x ← x + y</code></td><td>15</td><td>10</td><td></td></tr>
+        <tr><td><code>y ← y - x</code></td><td>15</td><td>−5</td><td></td></tr>
+      </tbody>
+    </table></div>
+    <details class="check"><summary>Check yourself: what would display if the first line were <code>x ← 4</code>?</summary><div><p>y becomes 8. 8 MOD 3 is 2, so the IF is false and x stays 4. Then y ← 8 − 4 = 4. It displays <strong>4</strong> and <strong>4</strong>.</p></div></details>
+  </article>
+  <div class="family"><h3>For families: ask your student</h3><ul>
+    <li>“If I set a = 1, then b = a, then change a to 2, what is b? Why do people get that wrong?”</li>
+    <li>“Show me an if-statement in your app. What decision is it making?”</li>
+    <li>“What’s a function, and why not just copy and paste the code instead?”</li>
+  </ul></div>
+  <div class="terms" data-terms="4"></div>
+  <div class="quiz" data-quiz="4"></div>
+</section>
+
+<!-- ============================ UNIT 8 ============================ -->
+<section class="unit" id="unit-8" style="--c: var(--u8)" data-unit="8">
+  <div class="unit-head"><span class="unit-num">8</span><div><h2>PBM Project Prep</h2><p class="bigq">How do you plan, build and explain a program that is entirely your own?</p></div></div>
+  <p class="unit-intro">Your PBM (Performance-Based Measurement) is your chance to show everything you’ve learned by building something you care about. Most of the credit comes from meeting the requirements and being able to explain your own code, not from making something fancy. A simple program that meets every requirement beats an impressive one that misses some.</p>
+
+  <article class="topic" id="u8-task">
+    <header><h3>Understanding the task</h3></header>
+    <p>Before writing any code, read the PBM task sheet and rubric your teacher gives you. Highlight every place it says “must,” “include,” or “explain.” Those are your requirements. Then turn them into a checklist you can tick off as you go.</p>
+    <p>Ask yourself three questions: <strong>What do I have to build?</strong> <strong>What do I have to turn in?</strong> (code, screenshots, a video, written answers, a presentation?) <strong>How will it be scored?</strong></p>
+    <div class="note"><p><strong>The task sheet and rubric are the final word.</strong> This page gives general advice that fits most programming projects. If anything here differs from what your teacher hands out, follow the task sheet.</p></div>
+  </article>
+
+  <article class="topic" id="u8-reqs">
+    <header><h3>What a strong program shows</h3></header>
+    <p>A PBM project is a chance to show the course standards in action. A program that includes everything below demonstrates most of the programming skills in Computer Science I. Use it alongside your rubric.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Skill</th><th>What it looks like in your program</th><th>Standard</th></tr></thead>
+      <tbody>
+        <tr><td>A clear user interface</td><td>Screens, buttons and labels that a new user can figure out without help.</td><td>1.04</td></tr>
+        <tr><td>Input and output</td><td>The user types, clicks or chooses something, and the program responds with text, images or sound based on that input.</td><td>1.02</td></tr>
+        <tr><td>Variables and a list</td><td>Variables that store changing values, and a list (array) that holds several values your program actually uses.</td><td>3.01</td></tr>
+        <tr><td>Expressions</td><td>Calculations, comparisons or joined strings that produce new values.</td><td>3.03</td></tr>
+        <tr><td>Conditionals</td><td>At least one if / else that makes the program behave differently in different situations.</td><td>3.04</td></tr>
+        <tr><td>A procedure you wrote</td><td>A function with a name and a parameter, called from somewhere in your program.</td><td>3.05</td></tr>
+        <tr><td>Testing and debugging</td><td>Evidence that you tried different inputs, found bugs and fixed them.</td><td>1.03</td></tr>
+      </tbody>
+    </table></div>
+    <p>Here is a small example that uses a list, a loop, a conditional and a procedure with a parameter. It’s only an illustration; your program should be your own idea.</p>
+    <pre class="code"><span class="lang">Pseudocode</span><code>scores ← [88, 72, 95, 61, 79]
+
+PROCEDURE countAtOrAbove(cutoff)
+{
+   count ← 0
+   FOR EACH score IN scores
+   {
+      IF (score ≥ cutoff)
+      {
+         count ← count + 1
+      }
+   }
+   RETURN(count)
+}
+
+cutoff ← INPUT()
+DISPLAY(countAtOrAbove(cutoff))</code></pre>
+    <pre class="code"><span class="lang">JavaScript (App Lab)</span><code>var scores = [88, 72, 95, 61, 79];
+
+function countAtOrAbove(cutoff) {
+  var count = 0;
+  for (var i = 0; i &lt; scores.length; i++) {
+    if (scores[i] &gt;= cutoff) {
+      count = count + 1;
+    }
+  }
+  return count;
+}
+
+onEvent("checkButton", "click", function() {
+  var cutoff = getNumber("cutoffInput");
+  setText("resultLabel", countAtOrAbove(cutoff) + " scores at or above " + cutoff);
+});</code></pre>
+    <details class="check"><summary>Check yourself: point to the sequencing, selection and iteration in <code>countAtOrAbove</code>.</summary><div><p><strong>Sequencing:</strong> set count to 0, then loop, then return, in that order. <strong>Selection:</strong> the <code>IF (score ≥ cutoff)</code>. <strong>Iteration:</strong> the <code>FOR EACH</code> loop through the list. The parameter <code>cutoff</code> changes the result each time the procedure is called.</p></div></details>
+  </article>
+
+  <article class="topic" id="u8-explain">
+    <header><h3>Explaining your code</h3></header>
+    <p>Being able to explain your program in your own words is just as important as building it. Whether your PBM asks for written answers, a presentation or a conversation with your teacher, be ready to explain:</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Topic</th><th>Be ready to explain</th></tr></thead>
+      <tbody>
+        <tr><td>Purpose</td><td>Who your program is for, what problem it solves, and what its inputs and outputs are.</td></tr>
+        <tr><td>How it works</td><td>Step by step, what your procedure does, including what its conditions and loops do.</td></tr>
+        <tr><td>Testing</td><td>Inputs you tested with, what output you expected, and a bug you found and how you fixed it.</td></tr>
+        <tr><td>Design choices</td><td>What your list stores and why it helps, and how your procedure makes the program easier to build or change.</td></tr>
+      </tbody>
+    </table></div>
+    <p><strong>Practice questions like these with your own code</strong> (written out, without looking at your program):</p>
+    <p>Describe two different calls to your procedure with different arguments that would make different parts of the code run. What would happen in each case?</p>
+    <p>Explain in enough detail that a classmate could recreate it how the loop in your procedure works and when it stops.</p>
+    <p>Pick one condition in your program. Describe an input where it is true, one where it is false, and the result of each.</p>
+    <p>How would your program be written differently if you couldn’t use a list? Why would that be harder?</p>
+    <p>If someone removed a specific line from your procedure, what would go wrong, and how would you find it?</p>
+    <details class="check"><summary>Check yourself: using the example above, how does the <code>scores</code> list make the program simpler?</summary><div><p>Without a list, each score would need its own variable (<code>score1</code>, <code>score2</code>…) and its own if-statement. Adding a score would mean writing more code. With a list, one loop handles any number of scores, and adding a score just means adding an item.</p></div></details>
+  </article>
+
+  <article class="topic" id="u8-rules">
+    <header><h3>Collaboration, credit and AI</h3></header>
+    <p>Your teacher will tell you what parts of the PBM, if any, you may work on with a partner. Anything you explain or write about your program must be in your own words.</p>
+    <p>Credit any code, images or media you didn’t create in a comment in your program code. That includes code generated by AI tools. Follow your teacher’s rules on AI, and only include code you fully understand: you’ll need to explain it yourself.</p>
+  </article>
+
+  <article class="topic" id="u8-tips">
+    <header><h3>Planning tips</h3></header>
+    <p><strong>Pick something small that you care about.</strong> A quiz, a calculator, a tracker, a simple game or a recommendation tool all work. Interest keeps you going; small scope means you finish.</p>
+    <p><strong>Plan your data and procedure first.</strong> Decide what your list holds and what your procedure will do with it before designing screens.</p>
+    <p><strong>Choose code you can explain easily.</strong> A clear loop with one if-statement is easier to explain than something clever and complicated.</p>
+    <p><strong>Test as you go.</strong> Keep notes on bugs you found and fixed. They make great material when you explain your testing.</p>
+    <p><strong>Check the rubric before you turn it in.</strong> Go line by line and point to where your project meets each item.</p>
+  </article>
+  <div class="family"><h3>For families: ask your student</h3><ul>
+    <li>“What is your PBM project going to do, and who is it for?”</li>
+    <li>“Where’s your list? What would happen if you didn’t have it?”</li>
+    <li>“Explain your procedure to me as if I were the computer. What happens step by step?”</li>
+    <li>“Can I see the rubric? Which parts have you finished?”</li>
+  </ul></div>
+  <div class="terms" data-terms="8"></div>
+  <div class="quiz" data-quiz="8"></div>
+</section>
+
+<!-- ============================ GLOSSARY ============================ -->
+<section class="unit" id="glossary" style="--c: var(--u0)" data-unit="g">
+  <div class="unit-head"><span class="unit-num" aria-hidden="true">A–Z</span><div><h2>Glossary</h2><p class="bigq">Every key term in one place.</p></div></div>
+  <div class="gsearch">
+    <input id="gq" type="search" placeholder="Search terms and definitions" aria-label="Search the glossary">
+    <select id="gunit" aria-label="Filter by unit"><option value="">All units</option><option value="1">Unit 1</option><option value="2">Unit 2</option><option value="3">Unit 3</option><option value="4">Unit 4</option><option value="8">Unit 8</option></select>
+  </div>
+  <div id="glist"></div>
+
+  <h3 style="font-size:1.15rem;margin-top:40px">More free practice</h3>
+  <p><a href="https://www.khanacademy.org/computing/ap-computer-science-principles">Khan Academy: Computer Science Principles</a> has free videos and practice questions on the same topics (it’s written for the AP course, but the ideas are the same). <a href="https://pythontutor.com/">Python Tutor</a> lets you step through JavaScript or Python one line at a time and watch variables change. <a href="https://studio.code.org/projects/applab/new">App Lab</a> is where you can keep building outside class.</p>
+</section>
+
+<footer>
+  <p>Written for students and families in our Computer Science I (CS20) class. Have a question or spotted a mistake? Ask in class.</p>
+</footer>
+</div>
+
+<script>
+// ===================== GLOSSARY DATA =====================
+// [term, unit, definition]
+const TERMS = [
+  ['Bit', 1, 'A single binary digit, 0 or 1. The smallest unit of data a computer stores.'],
+  ['Byte', 1, 'A group of 8 bits.'],
+  ['Binary', 1, 'The base-2 number system, which uses only 0 and 1. Place values are powers of 2.'],
+  ['Decimal', 1, 'The base-10 number system people normally use, with digits 0–9.'],
+  ['Abstraction', 1, 'Hiding details to focus on what matters, which helps manage complexity.'],
+  ['Analog data', 1, 'Data that changes smoothly and continuously, like sound waves or temperature.'],
+  ['Digital data', 1, 'Data stored as discrete values, ultimately as bits.'],
+  ['Sampling', 1, 'Measuring analog data at regular intervals to turn it into digital data.'],
+  ['Overflow error', 1, 'An error when a number is too large for the number of bits available to store it.'],
+  ['Roundoff error', 1, 'An error when a value (often a fraction) can’t be stored exactly and is stored as a close approximation.'],
+  ['ASCII', 1, 'An early character code that uses 7 bits to represent 128 English characters and symbols.'],
+  ['Unicode', 1, 'A character standard covering the world’s writing systems and emoji.'],
+  ['Pixel', 1, 'The smallest dot of color in a digital image.'],
+  ['RGB', 1, 'A color model that represents each color as amounts of red, green and blue light.'],
+  ['Metadata', 1, 'Data about data, such as a photo’s size, date or location.'],
+  ['Compression', 1, 'Reducing the number of bits needed to store or send data.'],
+  ['Lossless compression', 1, 'Compression that allows the original data to be restored exactly.'],
+  ['Lossy compression', 1, 'Compression that permanently removes some detail to make data much smaller.'],
+  ['Intellectual property', 1, 'Creative work, such as writing, art, music or code, that belongs to its creator.'],
+  ['Copyright', 1, 'Legal protection that gives a creator control over copying and sharing their work. It applies automatically.'],
+  ['Creative Commons', 1, 'A set of licenses creators use to let others reuse their work under chosen conditions.'],
+  ['Open source', 1, 'Software whose code is published so anyone can use, study and modify it.'],
+  ['Public domain', 1, 'Creative work with no copyright, free for anyone to use.'],
+  ['Computing device', 2, 'A physical device that can run a program, like a computer, phone, router or sensor.'],
+  ['Computing system', 2, 'A group of computing devices and programs working together for a common purpose.'],
+  ['Computer network', 2, 'A group of connected computing devices that can send and receive data.'],
+  ['Path', 2, 'The sequence of connected devices data travels through from sender to receiver.'],
+  ['Routing', 2, 'The process of finding a path from sender to receiver.'],
+  ['Router', 2, 'A device that forwards data toward its destination across networks.'],
+  ['Bandwidth', 2, 'The maximum amount of data that can be sent in a fixed amount of time, usually in bits per second.'],
+  ['Latency', 2, 'The delay between data being sent and arriving.'],
+  ['Internet', 2, 'A worldwide network of networks that communicate using open, shared protocols.'],
+  ['World Wide Web', 2, 'A system of linked pages and apps accessed over the Internet using HTTP.'],
+  ['Protocol', 2, 'An agreed-upon set of rules for how data is formatted and sent.'],
+  ['IP address', 2, 'A unique number assigned to each device on the Internet so data can be delivered to it.'],
+  ['IPv4 / IPv6', 2, 'Versions of the Internet Protocol. IPv4 uses 32-bit addresses; IPv6 uses 128-bit addresses to allow far more devices.'],
+  ['Packet', 2, 'A small chunk of data with a header, sent independently across a network.'],
+  ['TCP', 2, 'A protocol that makes sure all packets arrive and are put back in order, resending any that are lost.'],
+  ['UDP', 2, 'A faster protocol that sends packets without checking that they arrive or are in order.'],
+  ['DNS', 2, 'The Domain Name System, which translates domain names into IP addresses.'],
+  ['HTTP / HTTPS', 2, 'The protocol browsers use to request and receive web pages. HTTPS is the encrypted version.'],
+  ['Redundancy', 2, 'Extra devices or connections so there is more than one way for data to travel.'],
+  ['Fault tolerance', 2, 'The ability of a system to keep working when some parts fail.'],
+  ['Scalability', 2, 'The ability of a system to keep working well as it grows.'],
+  ['Digital divide', 2, 'The gap between people who have access to computing and the Internet and people who don’t.'],
+  ['Net neutrality', 2, 'The principle that Internet providers should treat all data equally.'],
+  ['User interface', 3, 'Everything a user sees and interacts with in an app.'],
+  ['Element ID', 3, 'The unique name code uses to refer to a UI element in App Lab.'],
+  ['Event', 3, 'Something that happens in a program, like a click or key press, that code can respond to.'],
+  ['Event handler', 3, 'Code that runs when a specific event happens.'],
+  ['Event-driven programming', 3, 'A style where the program waits for events and runs code in response.'],
+  ['Input', 3, 'Data sent to a program, from a user, device, file or another program.'],
+  ['Output', 3, 'Data or effects a program produces, such as text, images, sound or vibration.'],
+  ['User-centered design', 3, 'Designing based on the needs of the people who will use the product.'],
+  ['Prototype', 3, 'An early, simple version of a product used to test ideas.'],
+  ['Iterative development', 3, 'Repeatedly designing, testing and refining a program based on feedback.'],
+  ['Incremental development', 3, 'Building and testing a program in small working pieces, one at a time.'],
+  ['Pair programming', 3, 'Two programmers at one computer: the driver types while the navigator reviews and plans.'],
+  ['Debugging', 3, 'Finding and fixing errors in a program.'],
+  ['Syntax error', 3, 'A mistake in the language’s rules that stops the program from running.'],
+  ['Logic error', 3, 'A mistake that makes the program run but behave incorrectly or give the wrong result.'],
+  ['Runtime error', 3, 'An error that happens while the program is running, often stopping it.'],
+  ['Testing', 3, 'Running a program with chosen inputs and comparing actual results to expected results.'],
+  ['Comment', 3, 'A note in code that explains it and is ignored by the computer.'],
+  ['Variable', 4, 'A named place to store a value. It holds the most recently assigned value.'],
+  ['Assignment', 4, 'Storing a value in a variable, shown as ← in pseudocode and = in JavaScript.'],
+  ['Data type', 4, 'The kind of value, such as number, string, Boolean or list.'],
+  ['String', 4, 'A sequence of characters, like "hello".'],
+  ['Concatenation', 4, 'Joining strings together end to end.'],
+  ['Boolean', 4, 'A value that is either true or false.'],
+  ['Expression', 4, 'A combination of values, variables and operators that produces a single value.'],
+  ['MOD', 4, 'The operator that gives the remainder after division. 17 MOD 5 is 2.'],
+  ['Relational operator', 4, 'An operator that compares two values, like =, ≠, <, >, ≤, ≥.'],
+  ['Logical operator', 4, 'AND, OR and NOT, which combine or reverse Boolean values.'],
+  ['Sequencing', 4, 'Running statements one after another in order.'],
+  ['Selection', 4, 'Choosing which code runs based on a condition, using if-statements.'],
+  ['Conditional', 4, 'A statement (if / else) that runs different code depending on a Boolean expression.'],
+  ['Nested conditional', 4, 'A conditional inside another conditional.'],
+  ['Function / procedure', 4, 'A named group of instructions that can be called to run whenever needed.'],
+  ['Procedure call', 4, 'Running a procedure by using its name in the code.'],
+  ['Parameter', 4, 'A variable in a procedure definition that receives a value when the procedure is called.'],
+  ['Argument', 4, 'The actual value passed to a procedure’s parameter when it is called.'],
+  ['Procedural abstraction', 4, 'Using a procedure by knowing what it does, without needing to know how it works inside.'],
+  ['PBM', 8, 'Performance-Based Measurement: the Computer Science I Proof of Learning, where you show your skills by completing a task, such as building and explaining a program.'],
+  ['Proof of Learning', 8, 'The way every NC CTE course measures what students learned: a state test, a PBM, a local assessment or a credential.'],
+  ['Rubric', 8, 'A scoring guide that lists what your work must include and what each level of quality looks like.'],
+  ['List', 8, 'An ordered collection of values stored under one name. Pseudocode lists start at index 1; JavaScript lists start at 0.'],
+  ['Iteration', 8, 'Repeating a section of code, using a loop.'],
+  ['Algorithm', 8, 'A finite set of instructions that accomplishes a task. Built from sequencing, selection and iteration.'],
+  ['Data abstraction', 8, 'Using a list or other structure to manage multiple values under one name, which reduces complexity.'],
+  ['Traversal', 8, 'Going through the items in a list, all of them (complete) or only some (partial).'],
+];
+
+// ===================== QUIZZES =====================
+// q: question, code (optional), a: answers, c: index of correct, why: explanation
+const QUIZZES = {
+  1: [
+    { q: 'How many different values can be represented with 6 bits?', a: ['6', '12', '32', '64'], c: 3, why: 'Each bit doubles the possibilities: 2⁶ = 64.' },
+    { q: 'What is the binary number 101101 in decimal?', a: ['43', '45', '53', '90'], c: 1, why: '32 + 8 + 4 + 1 = 45.' },
+    { q: 'A program stores numbers in 4 bits. Adding 9 and 8 gives an unexpected small number. Which error is this?', a: ['Roundoff error', 'Syntax error', 'Overflow error', 'Logic error'], c: 2, why: '17 is bigger than 15, the largest 4-bit number, so it overflows and wraps around.' },
+    { q: 'Which situation is best suited to lossless compression?', a: ['Streaming a movie on a slow connection', 'Sending a spreadsheet of student grades', 'Posting a photo to social media', 'Making a video call'], c: 1, why: 'Every value in a spreadsheet must stay exactly correct. The others can tolerate a small loss of quality.' },
+    { q: 'What does the bit pattern 01000001 represent?', a: ['Always the number 65', 'Always the letter A', 'It depends on how the program interprets it', 'Nothing, because it has a leading 0'], c: 2, why: 'The same bits can mean 65, the letter A, part of a color, or something else entirely. Meaning comes from interpretation.' },
+  ],
+  2: [
+    { q: 'What is the main job of DNS?', a: ['Encrypting web traffic', 'Translating domain names into IP addresses', 'Putting packets back in order', 'Assigning bandwidth to devices'], c: 1, why: 'DNS works like a phone book for the Internet.' },
+    { q: 'Which best describes fault tolerance?', a: ['The network blocks harmful content', 'The network keeps working when some devices or connections fail', 'The network sends data as fast as possible', 'The network never loses packets'], c: 1, why: 'Fault tolerance comes from redundancy: multiple paths mean a single failure doesn’t stop communication.' },
+    { q: 'Using TCP, a file’s packets arrive out of order and one is missing. What happens?', a: ['The file is discarded', 'The packets are used in the order they arrived', 'They are reordered using sequence numbers and the missing one is resent', 'The sender starts over with a new IP address'], c: 2, why: 'TCP guarantees complete, in-order delivery.' },
+    { q: 'Why was IPv6 created?', a: ['IPv4 wasn’t encrypted', 'IPv4’s 32-bit addresses couldn’t provide enough unique addresses', 'IPv4 only worked on the Web', 'IPv4 was too slow for video'], c: 1, why: 'About 4.3 billion IPv4 addresses weren’t enough. IPv6 uses 128 bits.' },
+    { q: 'Which statement about the Internet and the Web is true?', a: ['They are two names for the same thing', 'The Internet runs on top of the Web', 'The Web is a service that runs on the Internet', 'Email is part of the Web'], c: 2, why: 'The Internet is the network; the Web is one service on it, along with email, games and more.' },
+  ],
+  3: [
+    { q: 'In an event-driven program, when does an event handler’s code run?', a: ['Once, when the program starts', 'From top to bottom, repeatedly', 'When its event, like a click, happens', 'Only when there is an error'], c: 2, why: 'Event handlers wait for their event and run in response.' },
+    { q: 'Testers say a button is hard to find. In iterative development, what comes next?', a: ['Release the app anyway', 'Start a completely new app', 'Change the design and test it again', 'Remove the button'], c: 2, why: 'Iterative development means refining based on feedback and testing again.' },
+    { q: 'A program runs without crashing but calculates the wrong average. What kind of error is it?', a: ['Syntax error', 'Logic error', 'Overflow error', 'Network error'], c: 1, why: 'The program runs, but its logic produces the wrong result.' },
+    { q: 'In pair programming, what does the navigator do?', a: ['Types all the code', 'Reviews the code, plans ahead and catches mistakes', 'Tests the finished app alone', 'Writes the documentation afterwards'], c: 1, why: 'The driver types; the navigator reviews and thinks ahead. They switch often.' },
+    { q: 'Why is it valuable to get feedback from a diverse group of users?', a: ['It makes the app run faster', 'It reveals needs and problems the developers might not notice', 'It is required by law', 'It reduces the size of the code'], c: 1, why: 'Different people use technology differently, which helps reduce bias in the design.' },
+  ],
+  4: [
+    { q: 'What is displayed?', code: 'a ← 3\nb ← a\na ← a + 4\nDISPLAY(b)', a: ['3', '4', '7', '10'], c: 0, why: 'b got a copy of 3. Changing a later doesn’t change b.' },
+    { q: 'What is 23 MOD 5?', a: ['3', '4', '4.6', '5'], c: 0, why: '23 ÷ 5 is 4 with a remainder of 3.' },
+    { q: 'What is displayed?', code: 'x ← 7\nIF (x MOD 2 = 0)\n{\n   DISPLAY("even")\n}\nELSE\n{\n   DISPLAY("odd")\n}', a: ['even', 'odd', '1', 'Nothing'], c: 1, why: '7 MOD 2 is 1, not 0, so the ELSE branch runs.' },
+    { q: 'Which condition is true only when age is from 13 to 19, inclusive?', a: ['(age ≥ 13) OR (age ≤ 19)', '(age > 13) AND (age < 19)', '(age ≥ 13) AND (age ≤ 19)', 'NOT (age = 13)'], c: 2, why: 'Both comparisons must be true, and ≥ / ≤ include 13 and 19 themselves.' },
+    { q: 'What is the main benefit of putting repeated code into a procedure?', a: ['It makes the program run faster', 'It reduces repetition and makes the program easier to change', 'It prevents all errors', 'It is required for event handlers'], c: 1, why: 'Procedural abstraction manages complexity: write once, call anywhere, fix in one place.' },
+  ],
+  8: [
+    { q: 'What does PBM stand for in Computer Science I?', a: ['Program Building Module', 'Performance-Based Measurement', 'Practice Benchmark', 'Procedure-Based Method'], c: 1, why: 'A PBM measures what you can do by having you complete a real task instead of a multiple-choice test.' },
+    { q: 'Where should you look to find out exactly what your PBM requires?', a: ['A random website', 'Last year’s project', 'The task sheet and rubric from your teacher', 'Your partner’s code'], c: 2, why: 'The task sheet and rubric are the final word on requirements and scoring.' },
+    { q: 'Which procedure best shows the programming skills from the course?', a: ['One with no parameters that only displays “Hello”', 'One with a parameter, a loop and an if-statement that uses a list', 'One copied from a tutorial without credit', 'One that is never called'], c: 1, why: 'It combines a parameter, iteration, selection and a list: several standards in one place.' },
+    { q: 'You used a function from an online tutorial in your project. What should you do?', a: ['Nothing, it’s free online', 'Rename the variables so it looks different', 'Credit the source in a comment and make sure you can explain it', 'Delete it right before turning the project in'], c: 2, why: 'Credit anything you didn’t write, including AI-generated code, and only include code you understand.' },
+  ],
+};
+
+// ===================== RENDERING =====================
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const el = (tag, attrs, ...kids) => {
+  const n = document.createElement(tag);
+  if (attrs) for (const [k, v] of Object.entries(attrs)) { if (v == null || v === false) continue; if (k === 'class') n.className = v; else if (k.startsWith('on')) n.addEventListener(k.slice(2), v); else n.setAttribute(k, v); }
+  kids.flat(Infinity).forEach(c => { if (c != null && c !== false) n.append(c.nodeType ? c : document.createTextNode(String(c))); });
+  return n;
+};
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('cspguide:' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem('cspguide:' + k, JSON.stringify(v)); } catch (e) {} },
+};
+
+// Progress checkboxes
+const done = new Set(store.get('done', []));
+$$('article.topic').forEach(art => {
+  const id = art.id;
+  const box = el('input', { type: 'checkbox', 'aria-label': 'Mark “' + art.querySelector('h3').textContent + '” as understood' });
+  box.checked = done.has(id);
+  box.addEventListener('change', () => { box.checked ? done.add(id) : done.delete(id); store.set('done', [...done]); renderNav(); });
+  art.querySelector('header').append(el('label', { class: 'done' }, box, 'I’ve got this'));
+});
+
+// Nav
+const NAV = [
+  { id: 'course', label: 'Course', name: '& PBM', c: 'var(--u0)' },
+  { id: 'unit-1', label: 'Unit 1', name: 'Digital Info', c: 'var(--u1)' },
+  { id: 'unit-2', label: 'Unit 2', name: 'Internet', c: 'var(--u2)' },
+  { id: 'unit-3', label: 'Unit 3', name: 'App Design', c: 'var(--u3)' },
+  { id: 'unit-4', label: 'Unit 4', name: 'Programming', c: 'var(--u4)' },
+  { id: 'unit-8', label: 'Unit 8', name: 'PBM Prep', c: 'var(--u8)' },
+  { id: 'glossary', label: 'Glossary', name: '', c: 'var(--u0)' },
+];
+// Give the end-of-unit blocks ids so the dropdown can link to them
+const EXTRAS = [['.family', 'families', 'For families'], ['.terms', 'terms', 'Key terms'], ['.quiz', 'quiz', 'Practice quiz']];
+NAV.forEach(n => EXTRAS.forEach(([sel, suffix]) => { const b = $('#' + n.id + ' > ' + sel); if (b) b.id = n.id + '-' + suffix; }));
+
+const navEl = $('nav.units');
+const navInner = $('#unitnav');
+const panel = el('div', { class: 'navpanel', id: 'navpanel', hidden: '' });
+navEl.append(panel);
+const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+let openId = null, closeTimer = null;
+let currentTopic = null;
+
+function renderNav() {
+  navInner.replaceChildren();
+  NAV.forEach(n => {
+    const topics = $$('#' + n.id + ' article.topic');
+    const pct = topics.length ? Math.round(100 * topics.filter(t => done.has(t.id)).length / topics.length) : 0;
+    navInner.append(el('a', { href: '#' + n.id, 'data-id': n.id, style: '--c:' + n.c, title: topics.length ? pct + '% marked as understood' : null,
+        'aria-controls': topics.length ? 'navpanel' : null, 'aria-expanded': topics.length ? String(openId === n.id) : null },
+      el('span', null, n.label, n.name ? el('span', { class: 'nm' }, ' ' + n.name) : null, topics.length ? el('span', { class: 'caret', 'aria-hidden': 'true' }, '▾') : null),
+      el('span', { class: 'bar', 'aria-hidden': 'true' }, el('i', { style: 'width:' + pct + '%' }))));
+  });
+  highlightNav();
+  if (openId) fillPanel(openId);
+}
+function fillPanel(id) {
+  const sec = $('#' + id);
+  const n = NAV.find(x => x.id === id);
+  panel.style.setProperty('--c', n.c);
+  panel.replaceChildren(
+    el('a', { class: 'ptitle', href: '#' + id }, el('span', null, sec.querySelector('h2').textContent, el('small', null, sec.querySelector('.bigq').textContent))),
+    el('ol', null, $$('article.topic', sec).map(t => el('li', null,
+      el('a', { href: '#' + t.id, 'aria-current': t.id === currentTopic ? 'true' : null },
+        el('span', { class: 'tick', 'aria-hidden': 'true' }, done.has(t.id) ? '✓' : '·'),
+        el('span', null, t.querySelector('h3').textContent, done.has(t.id) ? el('span', { class: 'skip' }, ' (understood)') : null))))),
+    EXTRAS.some(([sel]) => $(':scope > ' + sel, sec)) ? el('div', { class: 'extras' },
+      EXTRAS.filter(([sel]) => $(':scope > ' + sel, sec)).map(([, suffix, text]) => el('a', { href: '#' + id + '-' + suffix }, text))) : null);
+}
+function openPanel(id) {
+  clearTimeout(closeTimer);
+  if (!$$('#' + id + ' article.topic').length) { closePanel(); return; }
+  openId = id;
+  fillPanel(id);
+  panel.hidden = false;
+  // Line the panel up under its tab, kept inside the viewport
+  const link = navInner.querySelector('a[data-id="' + id + '"]');
+  const navBox = navEl.getBoundingClientRect(), linkBox = link.getBoundingClientRect();
+  const left = Math.max(8, Math.min(linkBox.left - navBox.left, navBox.width - panel.offsetWidth - 8));
+  panel.style.left = left + 'px';
+  $$('a[aria-expanded]', navInner).forEach(a => a.setAttribute('aria-expanded', String(a.dataset.id === id)));
+}
+function closePanel() {
+  clearTimeout(closeTimer);
+  openId = null;
+  panel.hidden = true;
+  $$('a[aria-expanded]', navInner).forEach(a => a.setAttribute('aria-expanded', 'false'));
+}
+const closeSoon = () => { clearTimeout(closeTimer); closeTimer = setTimeout(closePanel, 250); };
+
+if (canHover) {
+  navInner.addEventListener('mouseover', e => { const a = e.target.closest('a[data-id]'); if (a) openPanel(a.dataset.id); });
+  navEl.addEventListener('mouseleave', closeSoon);
+  navEl.addEventListener('mouseenter', () => clearTimeout(closeTimer));
+}
+// On touch screens the first tap on a unit shows its sections; tapping the unit name in the panel jumps to it
+navInner.addEventListener('click', e => {
+  const a = e.target.closest('a[data-id]');
+  if (!a) return;
+  if (!canHover && a.hasAttribute('aria-expanded') && openId !== a.dataset.id) { e.preventDefault(); openPanel(a.dataset.id); }
+  else closePanel();
+});
+panel.addEventListener('click', e => { if (e.target.closest('a')) closePanel(); });
+document.addEventListener('click', e => { if (openId && !navEl.contains(e.target)) closePanel(); });
+// Keyboard: Down arrow opens a unit's sections, arrows move through them, Escape closes
+navEl.addEventListener('keydown', e => {
+  const link = e.target.closest('#unitnav a[data-id]');
+  const items = $$('a', panel);
+  if (link && e.key === 'ArrowDown' && link.hasAttribute('aria-expanded')) {
+    e.preventDefault(); openPanel(link.dataset.id); $$('a', panel)[0].focus();
+  } else if (panel.contains(e.target) && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+    e.preventDefault();
+    const i = items.indexOf(e.target) + (e.key === 'ArrowDown' ? 1 : -1);
+    if (i < 0) navInner.querySelector('a[data-id="' + openId + '"]').focus(); else if (items[i]) items[i].focus();
+  } else if (e.key === 'Escape' && openId) {
+    const back = navInner.querySelector('a[data-id="' + openId + '"]');
+    closePanel(); back.focus();
+  }
+});
+navEl.addEventListener('focusout', e => { if (openId && !navEl.contains(e.relatedTarget)) closePanel(); });
+
+let currentSection = 'course';
+function highlightNav() { $$('#unitnav a').forEach(a => a.setAttribute('aria-current', String(a.dataset.id === currentSection))); }
+if ('IntersectionObserver' in window) {
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) {
+      currentSection = e.target.id; highlightNav();
+      const a = $('#unitnav a[data-id="' + currentSection + '"]');
+      if (a && !openId) a.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    }
+  }), { rootMargin: '-35% 0px -60% 0px' });
+  $$('section.unit').forEach(s => io.observe(s));
+  const tio = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) currentTopic = e.target.id; }), { rootMargin: '-30% 0px -65% 0px' });
+  $$('article.topic').forEach(t => tio.observe(t));
+}
+
+// Key terms per unit
+function termList(items, showUnit) {
+  return el('dl', { class: 'termlist' }, items.map(([t, u, d]) => [el('dt', null, t), el('dd', null, d, showUnit ? el('span', { class: 'tag' }, 'Unit ' + u) : null)]));
+}
+$$('.terms').forEach(box => {
+  const u = Number(box.dataset.terms);
+  box.append(el('h3', null, 'Key terms'), termList(TERMS.filter(t => t[1] === u), false));
+});
+
+// Glossary
+function renderGlossary() {
+  const q = $('#gq').value.trim().toLowerCase();
+  const u = $('#gunit').value;
+  const items = TERMS.filter(([t, unit, d]) => (!u || String(unit) === u) && (!q || (t + ' ' + d).toLowerCase().includes(q)))
+    .sort((a, b) => a[0].localeCompare(b[0]));
+  const box = $('#glist'); box.replaceChildren();
+  box.append(items.length ? termList(items, true) : el('p', null, 'No terms match. Try a shorter word.'));
+}
+$('#gq').addEventListener('input', renderGlossary);
+$('#gunit').addEventListener('change', renderGlossary);
+renderGlossary();
+
+// Quizzes
+const answers = store.get('quiz', {});
+function renderQuiz(box) {
+  const u = box.dataset.quiz;
+  const qs = QUIZZES[u];
+  box.replaceChildren();
+  const saved = answers[u] || {};
+  const correct = qs.filter((q, i) => saved[i] === q.c).length;
+  const attempted = Object.keys(saved).length;
+  box.append(el('h3', null, 'Practice quiz'),
+    el('p', { class: 'score', 'aria-live': 'polite' }, attempted ? correct + ' of ' + qs.length + ' correct so far' : qs.length + ' questions. Your answers are checked right away.'));
+  qs.forEach((q, i) => {
+    const name = 'q' + u + '-' + i;
+    const chosen = saved[i];
+    const fs = el('fieldset', null, el('legend', null, (i + 1) + '. ' + q.q, q.code ? el('pre', { class: 'code' }, el('code', null, q.code)) : null));
+    q.a.forEach((text, j) => {
+      const input = el('input', { type: 'radio', name, value: String(j) });
+      if (chosen === j) input.checked = true;
+      input.addEventListener('change', () => { answers[u] = { ...(answers[u] || {}), [i]: j }; store.set('quiz', answers); renderQuiz(box); box.querySelectorAll('.q')[i].querySelector('input:checked').focus(); });
+      const cls = chosen == null ? null : (j === q.c && chosen === j ? 'right' : (chosen === j ? 'wrong' : null));
+      fs.append(el('label', { class: cls }, input, el('span', null, text)));
+    });
+    if (chosen != null) fs.append(el('p', { class: 'fb' }, el('strong', null, chosen === q.c ? 'Correct. ' : 'Not quite. '), chosen === q.c ? q.why : 'The answer is “' + q.a[q.c] + '.” ' + q.why));
+    box.append(el('div', { class: 'q' }, fs));
+  });
+  if (attempted) box.append(el('p', null, el('button', { class: 'reset', type: 'button', onclick: () => { delete answers[u]; store.set('quiz', answers); renderQuiz(box); } }, 'Clear my answers')));
+}
+$$('.quiz').forEach(renderQuiz);
+
+// Binary widget
+(function () {
+  const box = $('#bits');
+  let value = 13;
+  const row = el('div', { class: 'row' });
+  const decOut = el('strong');
+  const binOut = el('code');
+  const charOut = el('span');
+  const input = el('input', { type: 'number', min: '0', max: '255', 'aria-label': 'Decimal value' });
+  const btns = [128, 64, 32, 16, 8, 4, 2, 1].map(pv => {
+    const b = el('button', { type: 'button', 'aria-label': 'Bit worth ' + pv }, el('b'), el('span', null, pv));
+    b.addEventListener('click', () => { value ^= pv; draw(); });
+    row.append(b); return [pv, b];
+  });
+  input.addEventListener('input', () => { const n = Math.max(0, Math.min(255, Math.floor(Number(input.value) || 0))); value = n; draw(false); });
+  function draw(updateInput = true) {
+    btns.forEach(([pv, b]) => { const on = (value & pv) !== 0; b.setAttribute('aria-pressed', String(on)); b.querySelector('b').textContent = on ? '1' : '0'; });
+    decOut.textContent = value;
+    binOut.textContent = value.toString(2).padStart(8, '0');
+    charOut.textContent = value >= 33 && value <= 126 ? 'As ASCII text: “' + String.fromCharCode(value) + '”' : value === 32 ? 'As ASCII text: a space' : 'As ASCII text: not a printable character';
+    if (updateInput) input.value = value;
+  }
+  box.append(row, el('div', { class: 'out' },
+    el('span', null, 'Decimal: ', decOut), el('span', null, 'Binary: ', binOut), charOut,
+    el('label', null, 'Type a number: ', input)));
+  draw();
+})();
+
+renderNav();
+</script>
+</body>
+</html>
