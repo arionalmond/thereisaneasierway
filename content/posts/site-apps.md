@@ -1,7 +1,7 @@
 +++
 title = 'Site Apps'
 date = '2026-10-17T20:46:01-04:00'
-draft = true
+draft = false
 description = 'added some site apps to the site'
 tags = []
 +++

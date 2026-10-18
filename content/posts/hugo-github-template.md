@@ -1,7 +1,7 @@
 +++
 title = 'Hugo Github Template'
 date = '2026-09-20T18:18:41-04:00'
-draft = true
+draft = false
 description = 'Create a github template for a hugo site.'
 tags = ['hugo','website','hugo','website','github']
 +++
