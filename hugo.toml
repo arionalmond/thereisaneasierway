@@ -2,6 +2,8 @@ baseURL = "https://thereisaneasierway.com/"
 locale = "en-us"
 title = "There Is An Easier Way"
 theme = "chalk"
+enableRobotsTXT = true
+enableGitInfo = true   # lastmod comes from the last commit touching each file
 
 # Clean URLs like /posts/my-idea/
 [permalinks]
@@ -12,6 +14,8 @@ theme = "chalk"
   # Shown in the footer
   author = "Ari Almond"
   source = "https://github.com/arionalmond/thereisaneasierway"
+  # Default social-share image (1200×630) for pages without their own `image` front matter.
+  # ogImage = "/og-default.png"
 
 [menus]
   [[menus.main]]

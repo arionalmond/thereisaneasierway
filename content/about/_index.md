@@ -1,5 +1,6 @@
 +++
 title = 'About'
+description = 'Ari Almond: high school computer science teacher and former senior software engineer.'
 +++
 ## Me
 I'm currently a high school computer science teacher.  

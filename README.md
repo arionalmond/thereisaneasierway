@@ -50,3 +50,17 @@ The workflow passes the correct `baseURL` automatically, so the placeholder in `
 ## Theme
 
 Everything lives in `themes/chalk/`. Styling is a single CSS file (`assets/css/main.css`) driven by CSS custom properties; the light/dark toggle is `assets/js/theme.js`. No webfonts, no frameworks.
+
+TODO  
+1. Review and commit, e.g. git add -A && git commit -m "SEO: canonical, social meta, robots.txt; stop tracking public/", then push. Your draft site-apps.md would be included too, but it has draft = true so it won't be published.  
+
+2. Make a share image: a 1200×630 PNG, say your site name on the paper background. Save it as static/og-default.png and uncomment ogImage in hugo.toml. Any post can use its own image with image = '/path.png' in its front matter.
+
+3. Google Search Console (search.google.com/search-console): add a Domain property for thereisaneasierway.com. Verify it with the DNS TXT record it gives you, added wherever your DNS is managed. Then go to Sitemaps and submit sitemap.xml.
+
+4. Bing Webmaster Tools: you can import the site straight from Search Console, which also covers DuckDuckGo.
+Turn on Enforce HTTPS: check it's ticked in your repo under Settings → Pages. If www.thereisaneasierway.com resolves, make sure it redirects to the bare domain (GitHub Pages does this when DNS has both records).
+
+5. Test after deploying: paste a post URL into opengraph.xyz and Google's Rich Results Test to see the share preview, and confirm https://thereisaneasierway.com/robots.txt loads.
+
+6. Keep writing a description for each post. It's the text Google shows under your link.

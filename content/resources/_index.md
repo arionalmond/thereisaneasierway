@@ -1,5 +1,6 @@
 +++
 title = 'Resources'
+description = 'A curated list of technology resources and useful links.'
 +++
 
 Table of Contents  
