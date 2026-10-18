@@ -1,5 +1,5 @@
 +++
-title = 'Site Apps'
+title = 'New Site Apps'
 date = '2026-10-17T20:46:01-04:00'
 draft = false
 description = 'added some site apps to the site'
